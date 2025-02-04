@@ -237,6 +237,21 @@
 @section('page-script')
 <script>
     const data = @json($data);
+    const sellersSelect = document.getElementById('vendedor_select');
+    const btnEditSeller = document.getElementById('btn_editar_vendedor');
+    const btnAddSeller = document.getElementById('btn_adicionar_vendedor');
+    const storeSelect = document.getElementById('loja_select');
+    const btnEditStore = document.getElementById('btn_editar_loja');
+    const clientSelect = document.getElementById('cliente_select');
+    const btnEditClient = document.getElementById('btn_editar_cliente');
+    const productSelect = document.getElementById('produto_select');
+    const btnEditProduct = document.getElementById('btn_editar_produto');
+    const quantityProduct = document.getElementById('quantidade_produto_input');
+    const btnAddProduct = document.getElementById('btn_add_produto');
+    const totalProductInput = document.getElementById('total_produto_input');
+    let allSellers = [];
+    let orderSummary = [];
+
     console.log(data);
 </script>
 @endsection
