@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-4 form-group ">
                             <label for="form_cpf_vendedor">CPF</label>
-                            <input type="text" class="form-control" name="form_cpf_vendedor" id="form_cpf_vendedor">
+                            <input type="text" class="form-control cpf" name="form_cpf_vendedor" id="form_cpf_vendedor">
                         </div>
                 </form>
             </div>
