@@ -22,7 +22,7 @@ return new class extends Migration
             
             $table->foreignId('client_id')->constrained('clients')->onDelete('restrict');
             $table->foreignId('store_id')->constrained('stores')->onDelete('restrict');
-            $table->foreignId('seller_id')->constrained('seller')->onDelete('restrict');
+            $table->foreignId('seller_id')->constrained('sellers')->onDelete('restrict');
             $table->foreignId('payment_id')->constrained('payment_methods')->onDelete('restrict');
         });
     }
