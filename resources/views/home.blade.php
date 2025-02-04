@@ -2,6 +2,19 @@
 
 @section('title', 'SGA - Home')
 
+@section('page-style')
+<style>
+    select option[data-active="0"] {
+        color: gray;
+    }
+
+    .btn-remover {
+        cursor: pointer;
+    }
+</style>
+@endsection
+
+
 @section('content')
 
 <div class="container-fluid">
