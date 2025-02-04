@@ -15,7 +15,8 @@ class Sale extends Model
         "store_id",
         "seller_id",
         "payment_id",
-        "total",
+        "total_itens",
+        "total_price",
         "observation"
     ];
 
