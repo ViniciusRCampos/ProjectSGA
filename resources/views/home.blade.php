@@ -17,11 +17,11 @@
                     <div class="col-md-4 mb-2">
                         <label for="cliente_select" class="mb-0">Cliente</label>
                         <div class="d-flex">
-                            <select name="cliente_select" id="cliente_select" class="form-control">
-                                <option></option>
+                            <select name="cliente_select" id="cliente_select" class="form-control pl-1">
+                                <option selected value="">Selecione o Cliente</option>
                                 @isset($data['clients'])
                                     @foreach ($data['clients'] as $client)
-                                    <option value="{{$client->id}}">{{$client->name}}</option>
+                                <option value="{{$client->id}}" data-active={{$client->active}}>{{$client->name}}</option>
                                     @endforeach
                                 @endisset
                             </select>
@@ -33,7 +33,7 @@
                                     <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                                 </svg>
                             </button>
-                            <button class="btn p-0 text-info" id="btn_editar_cliente">
+                            <button class="btn p-0 text-info" id="btn_editar_cliente" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -46,11 +46,11 @@
                     <div class="col-md-4 mb-2">
                         <label for="loja_select" class="mb-0">Loja</label>
                         <div class="d-flex">
-                            <select name="loja_select" id="loja_select" class="form-control">
-                                <option></option>
+                            <select name="loja_select" id="loja_select" class="form-control pl-1">
+                                <option selected value="">Selecione uma loja</option>
                                 @isset($data['stores'])
                                     @foreach ($data['stores'] as $store)
-                                    <option value="{{$store->id}}">{{$store->name}}</option>
+                                <option value="{{$store->id}}" data-active={{$store->active}}>{{$store->name}}</option>
                                     @endforeach
                                 @endisset
                             </select>
@@ -62,7 +62,7 @@
                                     <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                                 </svg>
                             </button>
-                            <button class="btn p-0 text-info" id="btn_editar_loja">
+                            <button class="btn p-0 text-info" id="btn_editar_loja" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -75,13 +75,10 @@
                     <div class="col-md-4 mb-2">
                         <label for="vendedor_select" class="mb-0">Vendedor</label>
                         <div class="d-flex">
-                            <select name="vendedor_select" id="vendedor_select" class="form-control">
-                                <option></option>
-                                <option>mock1</option>
-                                <option>mock2</option>
-                                <option>mock3</option>
+                            <select name="vendedor_select" id="vendedor_select" class="form-control pl-1" disabled>
+                                <option value="">Selecione o Vendedor</option>
                             </select>
-                            <button class='btn p-0 pl-2' id="btn_adicionar_vendedor" data-toggle="modal" data-target="#modal_vendedor">
+                            <button class='btn p-0 pl-2' id="btn_adicionar_vendedor" data-toggle="modal" data-target="#modal_vendedor" disabled>
                                 <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M9 12h6" />
@@ -89,7 +86,7 @@
                                     <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                                 </svg>
                             </button>
-                            <button class="btn p-0 text-info" id="btn_editar_vendedor">
+                            <button class="btn p-0 text-info" id="btn_editar_vendedor" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -112,15 +109,15 @@
                     <div class="col-4 mb-2">
                         <label for="produto_select" class="mb-0">Produto</label>
                         <div class="d-flex">
-                            <select name="produto_select" id="produto_select" class="form-control">
-                                <option></option>
+                            <select name="produto_select" id="produto_select" class="form-control pl-1" disabled>
+                                <option value="">Selecione o Produto</option>
                                 @isset($data['products'])
                                     @foreach ($data['products'] as $product)
-                                    <option value="{{$product->id}}">{{$product->name}}</option>
+                                <option value="{{$product->id}}" data-active={{$store->active}}>{{$product->name}}</option>
                                     @endforeach
                                 @endisset
                             </select>
-                            <button class='btn p-0 pl-2' data-toggle="modal" data-target="#modal_produto">
+                            <button class='btn p-0 pl-2' data-toggle="modal" data-target="#modal_produto" id="btn_adicionar_produto">
                                 <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M9 12h6" />
@@ -128,7 +125,7 @@
                                     <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                                 </svg>
                             </button>
-                            <button class="btn p-0 text-info">
+                            <button class="btn p-0 text-info" disabled id="btn_editar_produto">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -140,23 +137,28 @@
                     </div>
                     <div class="col-8 mb-2">
                         <label for="descricao_produto_textarea" class="mb-0">Descrição</label>
-                        <textarea name="descricao_produto_textarea" id="descricao_produto_textarea" readonly disabled class='form-control' style="height: 38px; resize:none;">Descrição do item vem aqui</textarea>
+                        <textarea name="descricao_produto_textarea" id="descricao_produto_textarea" readonly disabled class='form-control' style="height: 38px; resize:none;">Descrição do produto</textarea>
                     </div>
-                    <div class="col-3 mb-2">
+                    <div class="col-3 mb-2 pr-1">
                         <label for="cor_produto_input" class="mb-0">Cor</label>
-                        <input name="cor_produto_input" id="cor_produto_input" readonly disabled class='form-control' placeholder="Azul">
+                        <input name="cor_produto_input" id="cor_produto_input" readonly disabled class='form-control'>
                     </div>
                     <div class="col-3 mb-2">
                         <label for="preco_produto_input" class="mb-0">Preço</label>
-                        <input name="preco_produto_input" id="preco_produto_input" readonly disabled class='form-control' placeholder="R$ 5,00">
+                        <input name="preco_produto_input" id="preco_produto_input" readonly disabled class='form-control' placeholder="R$ 0,00">
                     </div>
                     <div class="col-3 mb-2">
                         <label for="quantidade_produto_input" class="mb-0">Quantidade</label>
-                        <input type="number" name="quantidade_produto_input" id="quantidade_produto_input" class='form-control'>
+                        <input type="number" name="quantidade_produto_input" id="quantidade_produto_input" class='form-control' min=0 value=0 disabled>
                     </div>
                     <div class="col-3 mb-2">
                         <label for="total_produto_input" class="mb-0">Valor Total</label>
-                        <input type="string" name="total_produto_input" disabled readonly id="total_produto_input" class='form-control' placeholder="R$ 25,00">
+                        <input type="string" name="total_produto_input" disabled readonly id="total_produto_input" class='form-control' placeholder="R$ 0,00">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="d-flex justify-content-end">
+                            <button class='btn btn-success' id="btn_add_produto" disabled>Adicionar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -169,7 +171,7 @@
                     </div>
                     <div class="col-12">
                         <div class="table-responsive border">
-                            <table class="table">
+                            <table class="table" id="tabela_produtos">
                                 <thead>
                                     <th scope="col">#</th>
                                     <th scope="col">Produto</th>
