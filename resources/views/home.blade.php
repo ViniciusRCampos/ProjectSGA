@@ -19,9 +19,11 @@
                         <div class="d-flex">
                             <select name="cliente_select" id="cliente_select" class="form-control">
                                 <option></option>
-                                @foreach ($data['clients'] as $client)
-                                <option value="{{$client->id}}">{{$client->name}}</option>
-                                @endforeach
+                                @isset($data['clients'])
+                                    @foreach ($data['clients'] as $client)
+                                    <option value="{{$client->id}}">{{$client->name}}</option>
+                                    @endforeach
+                                @endisset
                             </select>
                             <button class='btn p-0 pl-2' id="btn_adicionar_cliente" data-toggle="modal" data-target="#modal_cliente">
                                 <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus">
@@ -46,9 +48,11 @@
                         <div class="d-flex">
                             <select name="loja_select" id="loja_select" class="form-control">
                                 <option></option>
-                                @foreach ($data['stores'] as $store)
-                                <option value="{{$store->id}}">{{$store->name}}</option>
-                                @endforeach
+                                @isset($data['stores'])
+                                    @foreach ($data['stores'] as $store)
+                                    <option value="{{$store->id}}">{{$store->name}}</option>
+                                    @endforeach
+                                @endisset
                             </select>
                             <button class='btn p-0 pl-2' id="btn_adicionar_loja" data-toggle="modal" data-target="#modal_loja">
                                 <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus">
@@ -110,9 +114,11 @@
                         <div class="d-flex">
                             <select name="produto_select" id="produto_select" class="form-control">
                                 <option></option>
-                                @foreach ($data['products'] as $product)
-                                <option value="{{$product->id}}">{{$product->name}}</option>
-                                @endforeach
+                                @isset($data['products'])
+                                    @foreach ($data['products'] as $product)
+                                    <option value="{{$product->id}}">{{$product->name}}</option>
+                                    @endforeach
+                                @endisset
                             </select>
                             <button class='btn p-0 pl-2' data-toggle="modal" data-target="#modal_produto">
                                 <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus">
