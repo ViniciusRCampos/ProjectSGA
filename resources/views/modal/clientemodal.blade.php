@@ -9,6 +9,12 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <div class="form-row justify-content-end">
+                        <div class="custom-control custom-switch d-block">
+                            <label class="custom-control-label" for="switch_cliente">Ativo</label>
+                            <input type="checkbox" class="custom-control-input" id="switch_cliente" checked>
+                        </div>
+                    </div>
                     <div class="form-row">
                         <div class="col-8 form-group ">
                             <label for="form_nome_cliente">Nome</label>
