@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasActive;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Store extends Model
 {
-    use HasFactory;
+    use HasFactory, HasActive;
     protected $fillable = [
         "name",
         "CNPJ",
@@ -15,6 +16,7 @@ class Store extends Model
         "address",
         "district",
         "city",
-        "state"
+        "state",
+        "active"
     ];
 }
