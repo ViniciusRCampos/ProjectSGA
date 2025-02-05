@@ -3,6 +3,7 @@
 namespace App\Repository\Model;
 
 use App\Models\Sale;
+use Carbon\Carbon;
 
 class SaleRepository extends ModelRepository
 {

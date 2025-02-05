@@ -50,4 +50,17 @@ class SaleService
         ];
         return $data;
     }
+
+    public function getReportData() 
+    {
+        $data = [
+            'clients' => $this->clientRepository->all(),
+            'stores' => $this->storeRepository->all(),
+            'sales' => $this->saleRepository->all(),
+            'sellers' => $this->sellerRepository->all(),
+            'tableData' => $this->saleRepository->getReportData(),
+        ];
+
+        return $data;
+    }
 }
