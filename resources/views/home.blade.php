@@ -216,7 +216,7 @@
                     </div>
                     <div class="col-6 my-2">
                         <label for="pagamento_select" class="mb-0"></label>
-            <div class="d-flex justify-content-end">
+                        <div class="d-flex justify-content-end">
                             <select name="pagamento_select" id="pagamento_select" class="form-control pl-1 mr-2" disabled>
                                 <option value="">Selecione o pagamento</option>
                                 @isset($data['paymentMethods'])
