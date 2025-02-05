@@ -17,4 +17,10 @@ class SaleController extends Controller
         $data = $this->saleService->getData();
         return view("home")->with("data", $data);
     }
+
+    public function showReport(){
+        $data = $this->saleService->getReportData();
+        return view("report")->with("data", $data);
+    }
+
 }
