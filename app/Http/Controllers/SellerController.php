@@ -17,5 +17,13 @@ class SellerController extends Controller
         $sellerList = $this->SellerService->getSellers($storeId);
         return $sellerList;
     }
+
+    public function addNewSeller(Request $request){
+        $newSeller = $this->SellerService->addNewSeller($request->only([
+            'name', 'cpf', 'active', 'storeId'
+        ]));
+        return $newSeller;
+    }
+
     
 }
