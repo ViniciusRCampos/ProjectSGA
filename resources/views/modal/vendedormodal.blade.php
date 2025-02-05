@@ -11,8 +11,8 @@
                 <form>
                 <div class="form-row justify-content-end">
                         <div class="custom-control custom-switch d-block">
-                            <label class="custom-control-label" for="switch_vendedor">Ativo</label>
                             <input type="checkbox" class="custom-control-input" id="switch_vendedor" checked>
+                            <label class="custom-control-label" for="switch_vendedor">Ativo</label>
                         </div>
                     </div>
                     <div class="form-row">
