@@ -18,7 +18,7 @@
                     <div class="form-row">
                         <div class="col-7 form-group ">
                             <label for="form_nome_loja">Nome</label>
-                            <input type="text" class="form-control" id="form_nome_loja" name="form_nome_loja" required>
+                            <input type="text" class="form-control" id="form_nome_loja" name="form_nome_loja" required minlength="3">
                             <div class="invalid-feedback">
                                 Digite um nome válido.
                             </div>
