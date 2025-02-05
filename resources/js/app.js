@@ -4,6 +4,8 @@ import './bootstrap';
 import 'jquery-mask-plugin';
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
+import Swal from 'sweetalert2';
+
 
 toastr.options = {
   closeButton: true,
@@ -14,3 +16,4 @@ toastr.options = {
 window.$ = $;
 window.jQuery = $;
 window.toastr = toastr;
+window.Swal = Swal;
