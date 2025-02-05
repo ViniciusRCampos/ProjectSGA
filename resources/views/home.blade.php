@@ -217,7 +217,20 @@
                     <div class="col-6 my-2">
                         <label for="pagamento_select" class="mb-0"></label>
             <div class="d-flex justify-content-end">
-                <button class='btn btn-primary'>Finalizar</button>
+                            <select name="pagamento_select" id="pagamento_select" class="form-control pl-1 mr-2" disabled>
+                                <option value="">Selecione o pagamento</option>
+                                @isset($data['paymentMethods'])
+                                @foreach ($data['paymentMethods'] as $payment)
+                                <option value={{$payment->id}}>{{$payment->name}}</option>
+                                @endforeach
+                                @endisset
+                            </select>
+
+                            <button class='btn btn-primary' disabled id="btn_finalizar_venda">Finalizar</button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -230,6 +243,9 @@
 @section('page-script')
 <script>
     const data = @json($data);
+    const observationInput = document.getElementById('observacao_input');
+    const btnFinish = document.getElementById('btn_finalizar_venda');
+    const paymentSelect = document.getElementById('pagamento_select');
     const sellersSelect = document.getElementById('vendedor_select');
     const btnEditSeller = document.getElementById('btn_editar_vendedor');
     const btnAddSeller = document.getElementById('btn_adicionar_vendedor');
