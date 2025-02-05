@@ -445,21 +445,27 @@
 
         // Events
 
-        document.querySelectorAll('#modal_cliente input').forEach((input) => {
+        document.querySelectorAll('.modal input').forEach((input) => {
             input.addEventListener('input', (e) => {
                 const target = e.currentTarget;
 
-                target.classList.toggle('is-invalid', !target.checkValidity());
-                target.classList.toggle('is-valid', target.checkValidity());
+                const isValid = target.checkValidity();
+                target.classList.toggle('is-invalid', !isValid);
+                target.classList.toggle('is-valid', isValid);
 
-                if (target.id === 'form_cpf_cliente') {
+                if (target.classList.contains('cpf')) {
                     const isValidCPF = validarCPF(target.value);
                     target.classList.toggle('is-invalid', !isValidCPF);
                     target.classList.toggle('is-valid', isValidCPF);
                 }
-            });
 
-        })
+                if (target.classList.contains('cnpj')) {
+                    const isValidCNPJ = validarCNPJ(target.value);
+                    target.classList.toggle('is-invalid', !isValidCNPJ);
+                    target.classList.toggle('is-valid', isValidCNPJ);
+                }
+            });
+        });
 
         btnCreateClient.addEventListener('click', (e) => {
             const form = document.getElementById('form_modal_cliente')
@@ -474,22 +480,6 @@
                 return;
             }
             createClient();
-        })
-
-        document.querySelectorAll('#modal_loja input').forEach((input) => {
-            input.addEventListener('input', (e) => {
-                const target = e.currentTarget;
-
-                target.classList.toggle('is-invalid', !target.checkValidity());
-                target.classList.toggle('is-valid', target.checkValidity());
-
-                if (target.id === 'form_cnpj_loja') {
-                    const isValidCNPJ = validarCNPJ(target.value);
-                    target.classList.toggle('is-invalid', !isValidCNPJ);
-                    target.classList.toggle('is-valid', isValidCNPJ);
-                }
-            });
-
         })
 
         btnCreateStore.addEventListener('click', (e) => {
