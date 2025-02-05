@@ -232,11 +232,13 @@
     const productSelect = document.getElementById('produto_select');
     const btnEditProduct = document.getElementById('btn_editar_produto');
     const quantityProduct = document.getElementById('quantidade_produto_input');
-    const btnCreateProduct = document.getElementById('btn_adicionar_produto');
+    const btnModalProduct = document.getElementById('btn_adicionar_produto');
     const btnAddProduct = document.getElementById('btn_add_produto');
     const totalProductInput = document.getElementById('total_produto_input');
     const btnCreateClient = document.getElementById('btn_criar_cliente');
     const btnCreateStore = document.getElementById('btn_criar_loja');
+    const btnCreateSeller = document.getElementById('btn_criar_vendedor');
+    const btnCreateProduct = document.getElementById('btn_criar_produto');
     const btnSearchCep = document.getElementById('btn_pesquisa_cep');
     const urlSearchCep = "https://viacep.com.br/ws/";
 
@@ -252,8 +254,29 @@
         $('.cnpj').mask('00.000.000/0000-00', {
             reverse: true
         });
+        $('.money').mask('000.000.000.000.000,00', {
+            reverse: true
+        });
 
+        $('.money').on('blur', function() {
+            let value = $(this).val();
+            if (value === '' || value === '0,00') {
+                $(this).val('R$ 0,00');
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+                $(this).val('R$ ' + value);
+            }
+        });
 
+        $('.money').on('focus', function(e) {
+            let value = $(this).val();
+            if (value === 'R$ 0,00') {
+                e.target.value = ''
+            } else {
+                $(this).val(value.replace('R$ ', ''));
+            }
+        });
 
         function createOptions(element, arrayOptions) {
             arrayOptions.forEach(e => {
@@ -448,6 +471,7 @@
         document.querySelectorAll('.modal input').forEach((input) => {
             input.addEventListener('input', (e) => {
                 const target = e.currentTarget;
+                target.value = target.value.replace(/\s+/g, ' ');
 
                 const isValid = target.checkValidity();
                 target.classList.toggle('is-invalid', !isValid);
@@ -493,6 +517,29 @@
             createStore();
         })
 
+
+        btnCreateSeller.addEventListener('click', (e) => {
+            const form = document.getElementById('form_modal_vendedor')
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+            createSeller();
+        })
+
+        btnCreateProduct.addEventListener('click', (e) => {
+            const form = document.getElementById('form_modal_produto')
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+            createProduct();
+        })
+
         storeSelect.addEventListener('change', (e) => {
             sellersSelect.setAttribute('disabled', true);
             btnEditStore.setAttribute('disabled', true);
@@ -519,9 +566,9 @@
         sellersSelect.addEventListener('change', (e) => {
             btnEditSeller.setAttribute('disabled', true);
             productSelect.setAttribute('disabled', true);
-            btnCreateProduct.setAttribute('disabled', true);
+            btnModalProduct.setAttribute('disabled', true);
             if (e.target.value != '') {
-                btnCreateProduct.removeAttribute("disabled");
+                btnModalProduct.removeAttribute("disabled");
                 btnEditSeller.removeAttribute("disabled");
                 productSelect.removeAttribute("disabled");
             }
@@ -733,7 +780,7 @@
         function createSeller() {
             const form = document.getElementById('form_modal_vendedor');
             let newSeller;
-            fetch('/seller/add', {
+            fetch('/store/seller/add', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -742,6 +789,7 @@
                     body: JSON.stringify({
                         name: document.getElementById('form_nome_vendedor').value,
                         cpf: document.getElementById('form_cpf_vendedor').value.replace("-", '').split('.').join(''),
+                        storeId: storeSelect.value,
                         active: document.getElementById('switch_vendedor').checked
                     })
                 })
@@ -768,6 +816,8 @@
 
         function createProduct() {
             const form = document.getElementById('form_modal_produto');
+            const productName = document.getElementById('form_nome_produto').value.trim()
+            const description = document.getElementById('form_descricao_produto').innerText.trim();
             let newProduct;
             fetch('/product/add', {
                     method: 'POST',
@@ -776,10 +826,10 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({
-                        name: document.getElementById('form_nome_produto').value,
-                        description: document.getElementById('form_descricao_produto').innerText,
-                        color: document.getElementById('form_cor_produto').value,
-                        price: parseFloat(document.getElementById('form_preco_produto').value.replace("R$ ", "")),
+                        name: productName,
+                        description: description == '' ? productName : description,
+                        color: document.getElementById('form_cor_produto').value.trim(),
+                        price: parseFloat(document.getElementById('form_preco_produto').value.replace("R$ ", "").replace(',', '.')),
                         active: document.getElementById('switch_produto').checked
                     })
                 })
@@ -795,7 +845,7 @@
                         form.querySelectorAll('.is-valid').forEach((e) => {
                             e.classList.remove('is-valid');
                         })
-                        toastr.success('Cliente cadastrado com sucesso');
+                        toastr.success('Produto cadastrado com sucesso');
                         newProduct = dataResponse.data;
                         data.products.push(newProduct);
                         clearOptions(clientSelect);
