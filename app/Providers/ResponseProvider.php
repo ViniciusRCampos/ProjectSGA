@@ -30,7 +30,7 @@ class ResponseProvider
 
         return response()->json([
             'status' => 'error',
-            'message' => $ $errorMessages[$statusCode],
+            'message' => $errorMessages[$statusCode],
             'data' => null
         ], $statusCode);
     }
