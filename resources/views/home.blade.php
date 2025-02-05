@@ -247,11 +247,534 @@
     const productSelect = document.getElementById('produto_select');
     const btnEditProduct = document.getElementById('btn_editar_produto');
     const quantityProduct = document.getElementById('quantidade_produto_input');
+    const btnCreateProduct = document.getElementById('btn_adicionar_produto');
     const btnAddProduct = document.getElementById('btn_add_produto');
     const totalProductInput = document.getElementById('total_produto_input');
+    const btnCreateClient = document.getElementById('btn_criar_cliente');
+    const btnSearchCep = document.getElementById('btn_pesquisa_cep');
+    const urlSearchCep = "https://viacep.com.br/ws/";
+
     let allSellers = [];
     let orderSummary = [];
 
     console.log(data);
+    document.addEventListener("DOMContentLoaded", function() {
+        $('.cpf').mask('000.000.000-00', {
+            reverse: true
+        });
+        $('.cep').mask('00000-000');
+        $('.cnpj').mask('00.000.000/0000-00', {
+            reverse: true
+        });
+  
+
+
+    function createOptions(element, arrayOptions) {
+        arrayOptions.forEach(e => {
+            let option = document.createElement("option");
+            option.value = e.id;
+            option.innerHTML = e.name;
+            element.appendChild(option);
+        });
+    }
+
+    function clearOptions(element) {
+        while (element.length > 1) {
+            element.remove(1);
+        };
+    }
+
+    function fillProductsFields(product) {
+        let price = parseFloat(product['price']).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        document.getElementById('cor_produto_input').value = product['color'];
+        document.getElementById('preco_produto_input').value = `R$ ${price}`;
+        document.getElementById('descricao_produto_textarea').innerHTML = product['description'];
+    }
+
+    function resetProductFields() {
+        document.getElementById('cor_produto_input').value = '';
+        document.getElementById('preco_produto_input').value = `R$ 0,00`;
+        document.getElementById('descricao_produto_textarea').innerHTML = 'Descrição do produto';
+    }
+
+    function createTableRows() {
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        const produtoId = selectedOption.value;
+        const name = productSelect[productSelect.selectedIndex].text;
+        const color = document.getElementById('cor_produto_input').value;
+        const quantity = quantityProduct.value;
+        const price = document.getElementById('preco_produto_input').value;
+        const total = totalProductInput.value;
+        const productsTable = document.getElementById("tabela_produtos").querySelector("tbody");
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>
+                <svg class="text-danger btn-remover" data-id="${produtoId}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M18 6l-12 12" />
+                    <path d="M6 6l12 12" />
+                </svg>
+            </td>
+            <td>${produtoId}</td>
+            <td>${name}</td>
+            <td>${color}</td>
+            <td>${quantity}</td>
+            <td>${price}</td>
+            <td>${total}</td>
+        `;
+
+
+        productsTable.appendChild(row);
+
+        document.querySelectorAll('svg.btn-remover').forEach(svg => {
+            svg.removeEventListener('click', clickToRemoveRow);
+            svg.addEventListener('click', clickToRemoveRow);
+        });
+
+        selectedOption.remove();
+        productSelect.value = ''
+        productSelect.dispatchEvent(new Event('change', {
+            bubbles: true
+        }));
+        updateSaleValue()
+    }
+
+    function updateSaleValue() {
+        let total = 0;
+        document.querySelectorAll("#tabela_produtos tbody tr td:last-child").forEach(td => {
+            total += parseFloat(td.textContent.replace("R$ ", "").replace(",", "."));
+        });
+        document.getElementById('total_span').textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+    }
+
+    function addProductToOrder() {
+        orderSummary.push({
+            id: productSelect.value,
+            quantity: parseInt(quantityProduct.value),
+            total: parseFloat(totalProductInput.value.replace("RS ", "").replace(",", '.'))
+        })
+    }
+
+    function clickToRemoveRow(element) {
+        removeProductRow(element.currentTarget);
+    }
+
+    function orderSelectOptions(select) {
+        let options = Array.from(select.options);
+
+        options.sort((a, b) => a.value - b.value);
+
+        select.innerHTML = "";
+        options.forEach(option => select.appendChild(option));
+    }
+
+    function removeProductRow(element) {
+        const row = element.closest("tr");
+        const tbody = row.parentElement;
+        const index = Array.from(tbody.children).indexOf(row);
+        let id = element.getAttribute('data-id');
+        let option = document.createElement('option');
+
+        row.remove();
+        orderSummary = orderSummary.filter((item) => item.id != id);
+
+        option.value = id;
+        option.innerHTML = data.products.find((e) => e.id == id).name;
+        productSelect.appendChild(option);
+
+        orderSelectOptions(productSelect);
+        updateSaleValue()
+    }
+
+    // Validations
+
+    // https://www.geradorcpf.com/javascript-validar-cpf.htm
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/[^\d]+/g, '');
+
+        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+        add = 0;
+        for (i = 0; i < 9; i++)
+            add += parseInt(cpf.charAt(i)) * (10 - i);
+        rev = 11 - (add % 11);
+        if (rev == 10 || rev == 11)
+            rev = 0;
+        if (rev != parseInt(cpf.charAt(9)))
+            return false;
+        add = 0;
+        for (i = 0; i < 10; i++)
+            add += parseInt(cpf.charAt(i)) * (11 - i);
+        rev = 11 - (add % 11);
+        if (rev == 10 || rev == 11)
+            rev = 0;
+        if (rev != parseInt(cpf.charAt(10)))
+            return false;
+        return true;
+    }
+
+    // https://devarthur.com/blog/funcao-javascript-para-validar-cnpj
+    function validaCNPJ(cnpj) {
+        var b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        var c = String(cnpj).replace(/[^\d]/g, '')
+
+        if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+
+        for (var i = 0, n = 0; i < 12; n += c[i] * b[++i]);
+        if (c[12] != (((n %= 11) < 2) ? 0 : 11 - n))
+            return false
+
+        for (var i = 0, n = 0; i <= 12; n += c[i] * b[i++]);
+        if (c[13] != (((n %= 11) < 2) ? 0 : 11 - n))
+            return false
+
+        return true
+    }
+
+    // Events
+
+    document.querySelectorAll('#modal_cliente input').forEach((input) => {
+        input.addEventListener('input', (e) => {
+            const target = e.currentTarget;
+
+            target.classList.toggle('is-invalid', !target.checkValidity());
+            target.classList.toggle('is-valid', target.checkValidity());
+
+            if (target.id === 'form_cpf_cliente') {
+                const isValidCPF = validarCPF(target.value);
+                target.classList.toggle('is-invalid', !isValidCPF);
+                target.classList.toggle('is-valid', isValidCPF);
+            }
+        });
+
+    })
+
+    btnCreateClient.addEventListener('click', (e) => {
+        const form = document.getElementById('form_modal_cliente')
+        const genreSelect = document.getElementById('form_genero_cliente');
+
+        genreSelect.classList.toggle('is-invalid', genreSelect.value == '');
+        genreSelect.classList.toggle('is-valid', !genreSelect.value == '');
+
+        if (form.querySelectorAll('.is-invalid').length > 0) {
+            e.preventDefault()
+            e.stopPropagation()
+            return;
+        }
+        createClient();
+    })
+
+
+    storeSelect.addEventListener('change', (e) => {
+        sellersSelect.setAttribute('disabled', true);
+        btnEditStore.setAttribute('disabled', true);
+        productSelect.setAttribute('disabled', true);
+        document.querySelectorAll("svg.btn-remover").forEach((e) => {
+            removeProductRow(e);
+        });
+        updateSaleValue();
+        clearOptions(sellersSelect);
+        if (e.target.value != '') {
+            btnEditStore.removeAttribute("disabled");
+            storeSelect.setAttribute('disabled', true);
+            getSellers(e.target.value);
+        }
+    })
+
+    clientSelect.addEventListener('change', (e) => {
+        btnEditClient.setAttribute('disabled', true);
+        if (e.target.value != '') {
+            btnEditClient.removeAttribute("disabled");
+        }
+    })
+
+    sellersSelect.addEventListener('change', (e) => {
+        btnEditSeller.setAttribute('disabled', true);
+        productSelect.setAttribute('disabled', true);
+        btnCreateProduct.setAttribute('disabled', true);
+        if (e.target.value != '') {
+            btnCreateProduct.removeAttribute("disabled");
+            btnEditSeller.removeAttribute("disabled");
+            productSelect.removeAttribute("disabled");
+        }
+    })
+
+    productSelect.addEventListener('change', (e) => {
+        btnEditProduct.setAttribute('disabled', true);
+        btnAddProduct.setAttribute('disabled', true);
+        quantityProduct.value = 0;
+        totalProductInput.value = "R$ " + "0,00";
+        quantityProduct.setAttribute('disabled', true);
+        btn
+        resetProductFields();
+        if (e.target.value != '') {
+            quantityProduct.removeAttribute("disabled");
+            btnEditProduct.removeAttribute("disabled");
+            btnAddProduct.removeAttribute("disabled");
+            let product = data['products'].find((el) => el.id == e.target.value);
+            fillProductsFields(product);
+            quantityProduct.dispatchEvent(new Event('input', {
+                bubbles: true
+            }));
+        }
+    })
+
+    quantityProduct.addEventListener('keydown', (e) => {
+        if (e.key === '-' || e.key === 'e') {
+            e.preventDefault();
+        }
+    });
+
+    quantityProduct.addEventListener('input', (e) => {
+        if (e.target.value <= 0) {
+            e.target.value = 1;
+        }
+        let quantity = e.target.value;
+        let priceInput = document.getElementById('preco_produto_input')
+        let price = parseFloat(priceInput.value.split('R$ ')[1].replace(',', '.'));
+        let total = quantity * price
+        totalProductInput.value = "R$ " + total.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    })
+
+    btnAddProduct.addEventListener('click', () => {
+        if (quantityProduct.value == 0) {
+            toastr.warning("Por favor adicione uma quantidade de produtos");
+            return
+        }
+        if (sellersSelect.value == '' || productSelect.value == '') {
+            toastr.warning("Por favor preencha os campos faltantes");
+            return
+        }
+        createTableRows();
+        addProductToOrder();
+        resetProductFields();
+    })
+
+    btnSearchCep.addEventListener('click', () => {
+        const cep = document.getElementById('form_cep_loja').value.replace("-", '');
+        getCepData(cep);
+    })
+
+    // Fetchs
+
+    function getSellers(idStore) {
+        let textOption = storeSelect[0].innerHTML;
+        let valueOption = storeSelect.value;
+        storeSelect.value = ''
+        storeSelect[0].innerHTML = "Buscando..."
+        fetch(`/store/sellers/${idStore}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    toastr.error("Ops! Algo deu errado, tente novamente!");
+                    storeSelect.value = ''
+                } else {
+                    allSellers = data.data;
+                    createOptions(sellersSelect, data.data);
+                    sellersSelect.removeAttribute('disabled');
+                    btnAddSeller.removeAttribute('disabled');
+                    storeSelect[0].innerHTML = textOption;
+                    storeSelect.removeAttribute('disabled');
+                    storeSelect.value = valueOption;
+                }
+            })
+    }
+
+    function getCepData(cep) {
+        const city = document.getElementById('form_cidade_loja');
+        const address = document.getElementById('form_endereco_loja');
+        const district = document.getElementById('form_bairro_loja');
+        const state = document.getElementById('form_estado_loja');
+
+        let urlFetch = urlSearchCep + cep + '/json';
+
+        city.value = '...';
+        address.value = '...'
+        district.value = '...'
+        state.value = '...'
+
+        fetch(urlFetch, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(response => response.json())
+            .then(data => {
+                city.value = data.localidade
+                address.value = data.logradouro
+                district.value = data.bairro
+                state.value = data.estado
+            })
+    }
+
+    function createClient() {
+        const form = document.getElementById('form_modal_cliente');
+        let newClient;
+        fetch('/client/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: document.getElementById('form_nome_cliente').value,
+                    cpf: document.getElementById('form_cpf_cliente').value.replace("-",'').split('.').join(''),
+                    email: document.getElementById('form_email_cliente').value,
+                    genderId: document.getElementById('form_genero_cliente').value,
+                    active: document.getElementById('switch_cliente').checked
+                })
+            })
+            .then(response => response.json())
+            .then(dataResponse => {
+                if (dataResponse.status !== 'success') {
+                    toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                } else {
+                    form.reset();
+                    form.querySelectorAll('.is-valid').forEach((e) => {
+                        e.classList.remove('is-valid');
+                    })
+                    toastr.success('Cliente cadastrado com sucesso');
+                    newClient = dataResponse.data;
+                    data.clients.push(newClient);
+                    clearOptions(clientSelect);
+                    createOptions(clientSelect, data.clients);
+                }
+            })
+    }
+
+    function createStore() {
+        const form = document.getElementById('form_modal_loja');
+        const address = document.getElementById('form_endereco_loja').value;
+        const number = document.getElementById('form_numero_loja').value;
+        const complement = document.getElementById('form_complemento_loja').value;
+        let newStore;
+        fetch('/store/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: document.getElementById('form_nome_loja').value,
+                    cnpj: document.getElementById('form_cnpj_loja').value.replace("-",'').replace("/",'').split('.').join(''),
+                    cep: document.getElementById('form_cep_loja').value.replace("-",''),
+                    address: `${address}, ${number}, ${complement}`,
+                    district: document.getElementById('form_bairro_loja').value,
+                    city: document.getElementById('form_cidade_loja').value,
+                    state: document.getElementById('form_estado_loja').value,
+                    active: document.getElementById('switch_loja').checked
+                })
+            })
+            .then(response => response.json())
+            .then(dataResponse => {
+                if (dataResponse.status !== 'success') {
+                    toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                } else {
+                    form.reset();
+                    form.querySelectorAll('.is-valid').forEach((e) => {
+                        e.classList.remove('is-valid');
+                    })
+                    toastr.success('Loja cadastrada com sucesso');
+                    newStore = dataResponse.data;
+                    data.stores.push(newStore);
+                    clearOptions(storeSelect);
+                    createOptions(storeSelect, data.stores);
+                }
+            })
+    }
+
+    function createSeller() {
+        const form = document.getElementById('form_modal_vendedor');
+        let newSeller;
+        fetch('/seller/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: document.getElementById('form_nome_vendedor').value,
+                    cpf: document.getElementById('form_cpf_vendedor').value.replace("-",'').split('.').join(''),
+                    active: document.getElementById('switch_vendedor').checked
+                })
+            })
+            .then(response => response.json())
+            .then(dataResponse => {
+                if (dataResponse.status !== 'success') {
+                    toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                } else {
+                    form.reset();
+                    form.querySelectorAll('.is-valid').forEach((e) => {
+                        e.classList.remove('is-valid');
+                    })
+                    toastr.success('Vendedor cadastrado com sucesso');
+                    newSeller = dataResponse.data;
+                    allSellers.push(newSeller);
+                    clearOptions(sellersSelect);
+                    createOptions(sellersSelect, allSellers);
+                }
+            })
+    }
+
+    function createProduct() {
+        const form = document.getElementById('form_modal_produto');
+        let newProduct;
+        fetch('/product/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: document.getElementById('form_nome_produto').value,
+                    description: document.getElementById('form_descricao_produto').innerText,
+                    color: document.getElementById('form_cor_produto').value,
+                    price: parseFloat(document.getElementById('form_preco_produto').value.replace("R$ ", "")),
+                    active: document.getElementById('switch_produto').checked
+                })
+            })
+            .then(response => response.json())
+            .then(dataResponse => {
+                if (dataResponse.status !== 'success') {
+                    toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                } else {
+                    form.reset();
+                    form.querySelectorAll('.is-valid').forEach((e) => {
+                        e.classList.remove('is-valid');
+                    })
+                    toastr.success('Cliente cadastrado com sucesso');
+                    newProduct = dataResponse.data;
+                    data.products.push(newProduct);
+                    clearOptions(clientSelect);
+                    createOptions(clientSelect, data.products);
+                }
+            })
+    }
+})
 </script>
 @endsection
