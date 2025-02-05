@@ -19,15 +19,15 @@ class SellerService
         $this->responseProvider = $responseProvider;
     }
 
-    private function prepareNewSellerData(array $data)
+    private function prepareSellerData(array $data)
     {
-        $newSellerData = [
+        $sellerData = [
             "name" => $data["name"],
             "CPF" => $data["cpf"],
             "active" => $data["active"],
             "store_id" => $data["storeId"],
         ];
-        return $newSellerData;
+        return $sellerData;
     }
 
     public function getSellers(int $storeId): JsonResponse
@@ -44,9 +44,32 @@ class SellerService
     public function addNewSeller(array $data): JsonResponse
     {
         try {
-            $newSellerData = $this->prepareNewSellerData($data);
+            $newSellerData = $this->prepareSellerData($data);
             $newSeller = $this->sellerRepository->create($newSellerData);
             return $this->responseProvider->success($newSeller, 'Seller created with success', 201);
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage(), $data);
+            return $this->responseProvider->error($e->getCode());
+        }
+    }
+
+    public function getSellerById(int $sellerId)
+    {
+        try{
+            $seller = $this->sellerRepository->find($sellerId);
+            return $this->responseProvider->success($seller, '', 200);
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage(), [$sellerId]);
+            return $this->responseProvider->error($e->getCode());
+        }
+    }
+
+    public function updateSeller(array $data): JsonResponse
+    {
+        try{
+            $sellerData = $this->prepareSellerData($data);
+            $seller = $this->sellerRepository->update($data['id'], $sellerData);
+            return $this->responseProvider->success($seller, '', 200);
         } catch (\Throwable $e) {
             Log::error($e->getMessage(), $data);
             return $this->responseProvider->error($e->getCode());
