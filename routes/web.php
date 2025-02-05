@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleOperationController;
 use App\Http\Controllers\SellerController;
@@ -38,5 +39,7 @@ Route::post('/store/add', [StoreController::class, 'addNewStore'])->name('addSto
 Route::post('/product/add', [ProductController::class, 'addNewProduct'])->name('addProduct');
 
 Route::post('/sale/register', [SaleOperationController::class, 'registerSale'])->name('registerSale');
+
+Route::post('/sale/report/filter', [ReportController::class, 'getFilteredReport'])->name('filterReport');
 
 
