@@ -906,10 +906,8 @@
                 return acc + cur.quantity
             }, 0);
             const totalPrice = orderSummary.reduce((acc, cur) => {
-               return acc + cur.total
+                return acc + cur.total
             }, 0);
-
-            console.log('cheguei', totalItens, totalPrice)
 
             fetch('/sale/register', {
                     method: 'POST',
@@ -950,6 +948,87 @@
                     }
                 })
         }
+
+        btnEditSeller.addEventListener('click', () => {
+            const sellerId = sellersSelect.value;
+            getSellerById(sellerId);
+        })
+
+        function getSellerById(sellerId) {
+            fetch(`/seller/${sellerId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        toastr.error("Ops! Algo deu errado, tente novamente!");
+                        sellersSelect.value = ''
+                    } else {
+                        fillSellerModalInputs(data.data);
+                    }
+                    $('#modal_vendedor').modal('show');
+                })
+        }
+
+        function updateSeller(sellerId) {
+            const form = document.getElementById('form_modal_vendedor');
+
+            fetch(`/seller/update/${sellerId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('form_nome_vendedor').value,
+                        cpf: document.getElementById('form_cpf_vendedor').value.replace("-", '').split('.').join(''),
+                        storeId: storeSelect.value,
+                        active: document.getElementById('switch_vendedor').checked
+                    })
+                })
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                    } else {                        
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid');
+                        })
+                        $('#modal_vendedor').modal('hide');
+                        btnCreateSeller.classList.remove('d-none');
+                        document.getElementById('modal_btn_editar_vendedor').classList.add('d-none');
+                        updatedSellers = allSellers.map(
+                            (seller) => seller.id == dataResponse.data.id ? dataResponse.data : seller);;
+                        allSellers = updatedSellers;
+
+                        toastr.success('Vendedor atualizado com sucesso');
+
+                        clearOptions(sellersSelect);
+                        createOptions(sellersSelect, allSellers);
+                    }
+                })
+        }
+
+        function fillSellerModalInputs(data) {
+            document.getElementById('modal_btn_editar_vendedor').classList.remove('d-none');
+            document.getElementById('switch_cliente').checked = data.active == 1 ? true : false;
+            document.getElementById('form_nome_vendedor').value = data.name;
+            document.getElementById('form_cpf_vendedor').value = data.CPF;
+            btnCreateSeller.classList.add('d-none');
+        }
+
+        document.getElementById('modal_btn_editar_vendedor').addEventListener('click', () => {
+            const sellerId = sellersSelect.value;
+            updateSeller(sellerId);
+        })
     })
 </script>
 @endsection
