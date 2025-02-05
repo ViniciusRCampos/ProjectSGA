@@ -208,6 +208,14 @@
             </div>
         </div>
         <div class="col-12 mt-2">
+            <div class="card">
+                <div class="row m-0">
+                    <div class="col-6 my-2">
+                        <label for="observacao_input" class="mb-0">Observação</label>
+                        <input name="observacao_input" id="observacao_input" disabled class='form-control'>
+                    </div>
+                    <div class="col-6 my-2">
+                        <label for="pagamento_select" class="mb-0"></label>
             <div class="d-flex justify-content-end">
                 <button class='btn btn-primary'>Finalizar</button>
             </div>
