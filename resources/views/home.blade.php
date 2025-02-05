@@ -130,7 +130,7 @@
                                     @endforeach
                                 @endisset
                             </select>
-                            <button class='btn p-0 pl-2' data-toggle="modal" data-target="#modal_produto" id="btn_adicionar_produto">
+                            <button class='btn p-0 pl-2' data-toggle="modal" data-target="#modal_produto" id="btn_adicionar_produto" disabled>
                                 <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M9 12h6" />
@@ -196,27 +196,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">
-                                            <svg class="text-danger" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M18 6l-12 12" />
-                                                <path d="M6 6l12 12" />
-                                            </svg>
-                                        </th>
-                                        <td>0001</td>
-                                        <td>Blusa Oversize</td>
-                                        <td>Azul</td>
-                                        <td>5</td>
-                                        <td>R$ 15,00</td>
-                                        <td>R$ 75,00</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class='d-flex justify-content-end my-2'>
                             <p class="m-0 mr-1 h4 bold">Total: </p>
-                            <span class="border h4">R$ 75,00</span>
+                            <span class="border h4" id="total_span">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
@@ -251,6 +236,7 @@
     const btnAddProduct = document.getElementById('btn_add_produto');
     const totalProductInput = document.getElementById('total_produto_input');
     const btnCreateClient = document.getElementById('btn_criar_cliente');
+    const btnCreateStore = document.getElementById('btn_criar_loja');
     const btnSearchCep = document.getElementById('btn_pesquisa_cep');
     const urlSearchCep = "https://viacep.com.br/ws/";
 
@@ -417,22 +403,44 @@
         return true;
     }
 
-    // https://devarthur.com/blog/funcao-javascript-para-validar-cnpj
-    function validaCNPJ(cnpj) {
-        var b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        var c = String(cnpj).replace(/[^\d]/g, '')
+
+        // https://www.geradorcnpj.com/javascript-validar-cnpj.htm
+        function validarCNPJ(cnpj) {
+
+            cnpj = cnpj.replace(/[^\d]+/g, '');
 
         if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
 
-        for (var i = 0, n = 0; i < 12; n += c[i] * b[++i]);
-        if (c[12] != (((n %= 11) < 2) ? 0 : 11 - n))
-            return false
+            // Valida DVs
+            tamanho = cnpj.length - 2
+            numeros = cnpj.substring(0, tamanho);
+            digitos = cnpj.substring(tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(0))
+                return false;
 
-        for (var i = 0, n = 0; i <= 12; n += c[i] * b[i++]);
-        if (c[13] != (((n %= 11) < 2) ? 0 : 11 - n))
-            return false
+            tamanho = tamanho + 1;
+            numeros = cnpj.substring(0, tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(1))
+                return false;
 
-        return true
+            return true;
+
     }
 
     // Events
@@ -631,7 +639,7 @@
                 },
                 body: JSON.stringify({
                     name: document.getElementById('form_nome_cliente').value,
-                    cpf: document.getElementById('form_cpf_cliente').value.replace("-",'').split('.').join(''),
+                        cpf: document.getElementById('form_cpf_cliente').value.replace("-", '').split('.').join(''),
                     email: document.getElementById('form_email_cliente').value,
                     genderId: document.getElementById('form_genero_cliente').value,
                     active: document.getElementById('switch_cliente').checked
@@ -661,9 +669,12 @@
     function createStore() {
         const form = document.getElementById('form_modal_loja');
         const address = document.getElementById('form_endereco_loja').value;
-        const number = document.getElementById('form_numero_loja').value;
-        const complement = document.getElementById('form_complemento_loja').value;
+            const number = document.getElementById('form_numero_loja').value.trim();
+            const complement = document.getElementById('form_complemento_loja').value.trim();
+            const completAddress =
+                complement != '' ? `${address}, ${number}, ${complement}` : `${address}, ${number}`;
         let newStore;
+
         fetch('/store/add', {
                 method: 'POST',
                 headers: {
@@ -671,10 +682,10 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({
-                    name: document.getElementById('form_nome_loja').value,
-                    cnpj: document.getElementById('form_cnpj_loja').value.replace("-",'').replace("/",'').split('.').join(''),
-                    cep: document.getElementById('form_cep_loja').value.replace("-",''),
-                    address: `${address}, ${number}, ${complement}`,
+                        name: document.getElementById('form_nome_loja').value.trim(),
+                        cnpj: document.getElementById('form_cnpj_loja').value.replace("-", '').replace("/", '').split('.').join(''),
+                        cep: document.getElementById('form_cep_loja').value.replace("-", ''),
+                        address: completAddress,
                     district: document.getElementById('form_bairro_loja').value,
                     city: document.getElementById('form_cidade_loja').value,
                     state: document.getElementById('form_estado_loja').value,
@@ -698,6 +709,7 @@
                     data.stores.push(newStore);
                     clearOptions(storeSelect);
                     createOptions(storeSelect, data.stores);
+
                 }
             })
     }
@@ -713,7 +725,7 @@
                 },
                 body: JSON.stringify({
                     name: document.getElementById('form_nome_vendedor').value,
-                    cpf: document.getElementById('form_cpf_vendedor').value.replace("-",'').split('.').join(''),
+                        cpf: document.getElementById('form_cpf_vendedor').value.replace("-", '').split('.').join(''),
                     active: document.getElementById('switch_vendedor').checked
                 })
             })
