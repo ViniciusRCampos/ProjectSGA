@@ -33,9 +33,9 @@
                             <select name="cliente_select" id="cliente_select" class="form-control pl-1">
                                 <option selected value="">Selecione o Cliente</option>
                                 @isset($data['clients'])
-                                    @foreach ($data['clients'] as $client)
+                                @foreach ($data['clients'] as $client)
                                 <option value="{{$client->id}}" data-active={{$client->active}}>{{$client->name}}</option>
-                                    @endforeach
+                                @endforeach
                                 @endisset
                             </select>
                             <button class='btn p-0 pl-2' id="btn_adicionar_cliente" data-toggle="modal" data-target="#modal_cliente">
@@ -62,9 +62,9 @@
                             <select name="loja_select" id="loja_select" class="form-control pl-1">
                                 <option selected value="">Selecione uma loja</option>
                                 @isset($data['stores'])
-                                    @foreach ($data['stores'] as $store)
+                                @foreach ($data['stores'] as $store)
                                 <option value="{{$store->id}}" data-active={{$store->active}}>{{$store->name}}</option>
-                                    @endforeach
+                                @endforeach
                                 @endisset
                             </select>
                             <button class='btn p-0 pl-2' id="btn_adicionar_loja" data-toggle="modal" data-target="#modal_loja">
@@ -125,9 +125,9 @@
                             <select name="produto_select" id="produto_select" class="form-control pl-1" disabled>
                                 <option value="">Selecione o Produto</option>
                                 @isset($data['products'])
-                                    @foreach ($data['products'] as $product)
+                                @foreach ($data['products'] as $product)
                                 <option value="{{$product->id}}" data-active={{$store->active}}>{{$product->name}}</option>
-                                    @endforeach
+                                @endforeach
                                 @endisset
                             </select>
                             <button class='btn p-0 pl-2' data-toggle="modal" data-target="#modal_produto" id="btn_adicionar_produto" disabled>
@@ -252,52 +252,52 @@
         $('.cnpj').mask('00.000.000/0000-00', {
             reverse: true
         });
-  
 
 
-    function createOptions(element, arrayOptions) {
-        arrayOptions.forEach(e => {
-            let option = document.createElement("option");
-            option.value = e.id;
-            option.innerHTML = e.name;
-            element.appendChild(option);
-        });
-    }
 
-    function clearOptions(element) {
-        while (element.length > 1) {
-            element.remove(1);
-        };
-    }
+        function createOptions(element, arrayOptions) {
+            arrayOptions.forEach(e => {
+                let option = document.createElement("option");
+                option.value = e.id;
+                option.innerHTML = e.name;
+                element.appendChild(option);
+            });
+        }
 
-    function fillProductsFields(product) {
-        let price = parseFloat(product['price']).toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-        document.getElementById('cor_produto_input').value = product['color'];
-        document.getElementById('preco_produto_input').value = `R$ ${price}`;
-        document.getElementById('descricao_produto_textarea').innerHTML = product['description'];
-    }
+        function clearOptions(element) {
+            while (element.length > 1) {
+                element.remove(1);
+            };
+        }
 
-    function resetProductFields() {
-        document.getElementById('cor_produto_input').value = '';
-        document.getElementById('preco_produto_input').value = `R$ 0,00`;
-        document.getElementById('descricao_produto_textarea').innerHTML = 'Descrição do produto';
-    }
+        function fillProductsFields(product) {
+            let price = parseFloat(product['price']).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            document.getElementById('cor_produto_input').value = product['color'];
+            document.getElementById('preco_produto_input').value = `R$ ${price}`;
+            document.getElementById('descricao_produto_textarea').innerHTML = product['description'];
+        }
 
-    function createTableRows() {
-        const selectedOption = productSelect.options[productSelect.selectedIndex];
-        const produtoId = selectedOption.value;
-        const name = productSelect[productSelect.selectedIndex].text;
-        const color = document.getElementById('cor_produto_input').value;
-        const quantity = quantityProduct.value;
-        const price = document.getElementById('preco_produto_input').value;
-        const total = totalProductInput.value;
-        const productsTable = document.getElementById("tabela_produtos").querySelector("tbody");
+        function resetProductFields() {
+            document.getElementById('cor_produto_input').value = '';
+            document.getElementById('preco_produto_input').value = `R$ 0,00`;
+            document.getElementById('descricao_produto_textarea').innerHTML = 'Descrição do produto';
+        }
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
+        function createTableRows() {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const produtoId = selectedOption.value;
+            const name = productSelect[productSelect.selectedIndex].text;
+            const color = document.getElementById('cor_produto_input').value;
+            const quantity = quantityProduct.value;
+            const price = document.getElementById('preco_produto_input').value;
+            const total = totalProductInput.value;
+            const productsTable = document.getElementById("tabela_produtos").querySelector("tbody");
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
             <td>
                 <svg class="text-danger btn-remover" data-id="${produtoId}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -314,94 +314,94 @@
         `;
 
 
-        productsTable.appendChild(row);
+            productsTable.appendChild(row);
 
-        document.querySelectorAll('svg.btn-remover').forEach(svg => {
-            svg.removeEventListener('click', clickToRemoveRow);
-            svg.addEventListener('click', clickToRemoveRow);
-        });
+            document.querySelectorAll('svg.btn-remover').forEach(svg => {
+                svg.removeEventListener('click', clickToRemoveRow);
+                svg.addEventListener('click', clickToRemoveRow);
+            });
 
-        selectedOption.remove();
-        productSelect.value = ''
-        productSelect.dispatchEvent(new Event('change', {
-            bubbles: true
-        }));
-        updateSaleValue()
-    }
+            selectedOption.remove();
+            productSelect.value = ''
+            productSelect.dispatchEvent(new Event('change', {
+                bubbles: true
+            }));
+            updateSaleValue()
+        }
 
-    function updateSaleValue() {
-        let total = 0;
-        document.querySelectorAll("#tabela_produtos tbody tr td:last-child").forEach(td => {
-            total += parseFloat(td.textContent.replace("R$ ", "").replace(",", "."));
-        });
-        document.getElementById('total_span').textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
-    }
+        function updateSaleValue() {
+            let total = 0;
+            document.querySelectorAll("#tabela_produtos tbody tr td:last-child").forEach(td => {
+                total += parseFloat(td.textContent.replace("R$ ", "").replace(",", "."));
+            });
+            document.getElementById('total_span').textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+        }
 
-    function addProductToOrder() {
-        orderSummary.push({
-            id: productSelect.value,
-            quantity: parseInt(quantityProduct.value),
-            total: parseFloat(totalProductInput.value.replace("RS ", "").replace(",", '.'))
-        })
-    }
+        function addProductToOrder() {
+            orderSummary.push({
+                id: productSelect.value,
+                quantity: parseInt(quantityProduct.value),
+                total: parseFloat(totalProductInput.value.replace("RS ", "").replace(",", '.'))
+            })
+        }
 
-    function clickToRemoveRow(element) {
-        removeProductRow(element.currentTarget);
-    }
+        function clickToRemoveRow(element) {
+            removeProductRow(element.currentTarget);
+        }
 
-    function orderSelectOptions(select) {
-        let options = Array.from(select.options);
+        function orderSelectOptions(select) {
+            let options = Array.from(select.options);
 
-        options.sort((a, b) => a.value - b.value);
+            options.sort((a, b) => a.value - b.value);
 
-        select.innerHTML = "";
-        options.forEach(option => select.appendChild(option));
-    }
+            select.innerHTML = "";
+            options.forEach(option => select.appendChild(option));
+        }
 
-    function removeProductRow(element) {
-        const row = element.closest("tr");
-        const tbody = row.parentElement;
-        const index = Array.from(tbody.children).indexOf(row);
-        let id = element.getAttribute('data-id');
-        let option = document.createElement('option');
+        function removeProductRow(element) {
+            const row = element.closest("tr");
+            const tbody = row.parentElement;
+            const index = Array.from(tbody.children).indexOf(row);
+            let id = element.getAttribute('data-id');
+            let option = document.createElement('option');
 
-        row.remove();
-        orderSummary = orderSummary.filter((item) => item.id != id);
+            row.remove();
+            orderSummary = orderSummary.filter((item) => item.id != id);
 
-        option.value = id;
-        option.innerHTML = data.products.find((e) => e.id == id).name;
-        productSelect.appendChild(option);
+            option.value = id;
+            option.innerHTML = data.products.find((e) => e.id == id).name;
+            productSelect.appendChild(option);
 
-        orderSelectOptions(productSelect);
-        updateSaleValue()
-    }
+            orderSelectOptions(productSelect);
+            updateSaleValue()
+        }
 
-    // Validations
+        // Validations
 
-    // https://www.geradorcpf.com/javascript-validar-cpf.htm
-    function validarCPF(cpf) {
-        cpf = cpf.replace(/[^\d]+/g, '');
+        // https://www.geradorcpf.com/javascript-validar-cpf.htm
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
 
-        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
 
-        add = 0;
-        for (i = 0; i < 9; i++)
-            add += parseInt(cpf.charAt(i)) * (10 - i);
-        rev = 11 - (add % 11);
-        if (rev == 10 || rev == 11)
-            rev = 0;
-        if (rev != parseInt(cpf.charAt(9)))
-            return false;
-        add = 0;
-        for (i = 0; i < 10; i++)
-            add += parseInt(cpf.charAt(i)) * (11 - i);
-        rev = 11 - (add % 11);
-        if (rev == 10 || rev == 11)
-            rev = 0;
-        if (rev != parseInt(cpf.charAt(10)))
-            return false;
-        return true;
-    }
+            add = 0;
+            for (i = 0; i < 9; i++)
+                add += parseInt(cpf.charAt(i)) * (10 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11)
+                rev = 0;
+            if (rev != parseInt(cpf.charAt(9)))
+                return false;
+            add = 0;
+            for (i = 0; i < 10; i++)
+                add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11)
+                rev = 0;
+            if (rev != parseInt(cpf.charAt(10)))
+                return false;
+            return true;
+        }
 
 
         // https://www.geradorcnpj.com/javascript-validar-cnpj.htm
@@ -409,7 +409,7 @@
 
             cnpj = cnpj.replace(/[^\d]+/g, '');
 
-        if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+            if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
 
             // Valida DVs
             tamanho = cnpj.length - 2
@@ -441,352 +441,378 @@
 
             return true;
 
-    }
+        }
 
-    // Events
+        // Events
 
-    document.querySelectorAll('#modal_cliente input').forEach((input) => {
-        input.addEventListener('input', (e) => {
-            const target = e.currentTarget;
+        document.querySelectorAll('#modal_cliente input').forEach((input) => {
+            input.addEventListener('input', (e) => {
+                const target = e.currentTarget;
 
-            target.classList.toggle('is-invalid', !target.checkValidity());
-            target.classList.toggle('is-valid', target.checkValidity());
+                target.classList.toggle('is-invalid', !target.checkValidity());
+                target.classList.toggle('is-valid', target.checkValidity());
 
-            if (target.id === 'form_cpf_cliente') {
-                const isValidCPF = validarCPF(target.value);
-                target.classList.toggle('is-invalid', !isValidCPF);
-                target.classList.toggle('is-valid', isValidCPF);
+                if (target.id === 'form_cpf_cliente') {
+                    const isValidCPF = validarCPF(target.value);
+                    target.classList.toggle('is-invalid', !isValidCPF);
+                    target.classList.toggle('is-valid', isValidCPF);
+                }
+            });
+
+        })
+
+        btnCreateClient.addEventListener('click', (e) => {
+            const form = document.getElementById('form_modal_cliente')
+            const genreSelect = document.getElementById('form_genero_cliente');
+
+            genreSelect.classList.toggle('is-invalid', genreSelect.value == '');
+            genreSelect.classList.toggle('is-valid', !genreSelect.value == '');
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+            createClient();
+        })
+
+        document.querySelectorAll('#modal_loja input').forEach((input) => {
+            input.addEventListener('input', (e) => {
+                const target = e.currentTarget;
+
+                target.classList.toggle('is-invalid', !target.checkValidity());
+                target.classList.toggle('is-valid', target.checkValidity());
+
+                if (target.id === 'form_cnpj_loja') {
+                    const isValidCNPJ = validarCNPJ(target.value);
+                    target.classList.toggle('is-invalid', !isValidCNPJ);
+                    target.classList.toggle('is-valid', isValidCNPJ);
+                }
+            });
+
+        })
+
+        btnCreateStore.addEventListener('click', (e) => {
+            const form = document.getElementById('form_modal_loja')
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+            createStore();
+        })
+
+        storeSelect.addEventListener('change', (e) => {
+            sellersSelect.setAttribute('disabled', true);
+            btnEditStore.setAttribute('disabled', true);
+            productSelect.setAttribute('disabled', true);
+            document.querySelectorAll("svg.btn-remover").forEach((e) => {
+                removeProductRow(e);
+            });
+            updateSaleValue();
+            clearOptions(sellersSelect);
+            if (e.target.value != '') {
+                btnEditStore.removeAttribute("disabled");
+                storeSelect.setAttribute('disabled', true);
+                getSellers(e.target.value);
+            }
+        })
+
+        clientSelect.addEventListener('change', (e) => {
+            btnEditClient.setAttribute('disabled', true);
+            if (e.target.value != '') {
+                btnEditClient.removeAttribute("disabled");
+            }
+        })
+
+        sellersSelect.addEventListener('change', (e) => {
+            btnEditSeller.setAttribute('disabled', true);
+            productSelect.setAttribute('disabled', true);
+            btnCreateProduct.setAttribute('disabled', true);
+            if (e.target.value != '') {
+                btnCreateProduct.removeAttribute("disabled");
+                btnEditSeller.removeAttribute("disabled");
+                productSelect.removeAttribute("disabled");
+            }
+        })
+
+        productSelect.addEventListener('change', (e) => {
+            btnEditProduct.setAttribute('disabled', true);
+            btnAddProduct.setAttribute('disabled', true);
+            quantityProduct.value = 0;
+            totalProductInput.value = "R$ " + "0,00";
+            quantityProduct.setAttribute('disabled', true);
+            btn
+            resetProductFields();
+            if (e.target.value != '') {
+                quantityProduct.removeAttribute("disabled");
+                btnEditProduct.removeAttribute("disabled");
+                btnAddProduct.removeAttribute("disabled");
+                let product = data['products'].find((el) => el.id == e.target.value);
+                fillProductsFields(product);
+                quantityProduct.dispatchEvent(new Event('input', {
+                    bubbles: true
+                }));
+            }
+        })
+
+        quantityProduct.addEventListener('keydown', (e) => {
+            if (e.key === '-' || e.key === 'e') {
+                e.preventDefault();
             }
         });
 
-    })
+        quantityProduct.addEventListener('input', (e) => {
+            if (e.target.value <= 0) {
+                e.target.value = 1;
+            }
+            let quantity = e.target.value;
+            let priceInput = document.getElementById('preco_produto_input')
+            let price = parseFloat(priceInput.value.split('R$ ')[1].replace(',', '.'));
+            let total = quantity * price
+            totalProductInput.value = "R$ " + total.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        })
 
-    btnCreateClient.addEventListener('click', (e) => {
-        const form = document.getElementById('form_modal_cliente')
-        const genreSelect = document.getElementById('form_genero_cliente');
+        btnAddProduct.addEventListener('click', () => {
+            if (quantityProduct.value == 0) {
+                toastr.warning("Por favor adicione uma quantidade de produtos");
+                return
+            }
+            if (sellersSelect.value == '' || productSelect.value == '') {
+                toastr.warning("Por favor preencha os campos faltantes");
+                return
+            }
+            createTableRows();
+            addProductToOrder();
+            resetProductFields();
+        })
 
-        genreSelect.classList.toggle('is-invalid', genreSelect.value == '');
-        genreSelect.classList.toggle('is-valid', !genreSelect.value == '');
+        btnSearchCep.addEventListener('click', () => {
+            const cep = document.getElementById('form_cep_loja').value.replace("-", '');
+            getCepData(cep);
+        })
 
-        if (form.querySelectorAll('.is-invalid').length > 0) {
-            e.preventDefault()
-            e.stopPropagation()
-            return;
-        }
-        createClient();
-    })
+        // Fetchs
 
-
-    storeSelect.addEventListener('change', (e) => {
-        sellersSelect.setAttribute('disabled', true);
-        btnEditStore.setAttribute('disabled', true);
-        productSelect.setAttribute('disabled', true);
-        document.querySelectorAll("svg.btn-remover").forEach((e) => {
-            removeProductRow(e);
-        });
-        updateSaleValue();
-        clearOptions(sellersSelect);
-        if (e.target.value != '') {
-            btnEditStore.removeAttribute("disabled");
-            storeSelect.setAttribute('disabled', true);
-            getSellers(e.target.value);
-        }
-    })
-
-    clientSelect.addEventListener('change', (e) => {
-        btnEditClient.setAttribute('disabled', true);
-        if (e.target.value != '') {
-            btnEditClient.removeAttribute("disabled");
-        }
-    })
-
-    sellersSelect.addEventListener('change', (e) => {
-        btnEditSeller.setAttribute('disabled', true);
-        productSelect.setAttribute('disabled', true);
-        btnCreateProduct.setAttribute('disabled', true);
-        if (e.target.value != '') {
-            btnCreateProduct.removeAttribute("disabled");
-            btnEditSeller.removeAttribute("disabled");
-            productSelect.removeAttribute("disabled");
-        }
-    })
-
-    productSelect.addEventListener('change', (e) => {
-        btnEditProduct.setAttribute('disabled', true);
-        btnAddProduct.setAttribute('disabled', true);
-        quantityProduct.value = 0;
-        totalProductInput.value = "R$ " + "0,00";
-        quantityProduct.setAttribute('disabled', true);
-        btn
-        resetProductFields();
-        if (e.target.value != '') {
-            quantityProduct.removeAttribute("disabled");
-            btnEditProduct.removeAttribute("disabled");
-            btnAddProduct.removeAttribute("disabled");
-            let product = data['products'].find((el) => el.id == e.target.value);
-            fillProductsFields(product);
-            quantityProduct.dispatchEvent(new Event('input', {
-                bubbles: true
-            }));
-        }
-    })
-
-    quantityProduct.addEventListener('keydown', (e) => {
-        if (e.key === '-' || e.key === 'e') {
-            e.preventDefault();
-        }
-    });
-
-    quantityProduct.addEventListener('input', (e) => {
-        if (e.target.value <= 0) {
-            e.target.value = 1;
-        }
-        let quantity = e.target.value;
-        let priceInput = document.getElementById('preco_produto_input')
-        let price = parseFloat(priceInput.value.split('R$ ')[1].replace(',', '.'));
-        let total = quantity * price
-        totalProductInput.value = "R$ " + total.toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    })
-
-    btnAddProduct.addEventListener('click', () => {
-        if (quantityProduct.value == 0) {
-            toastr.warning("Por favor adicione uma quantidade de produtos");
-            return
-        }
-        if (sellersSelect.value == '' || productSelect.value == '') {
-            toastr.warning("Por favor preencha os campos faltantes");
-            return
-        }
-        createTableRows();
-        addProductToOrder();
-        resetProductFields();
-    })
-
-    btnSearchCep.addEventListener('click', () => {
-        const cep = document.getElementById('form_cep_loja').value.replace("-", '');
-        getCepData(cep);
-    })
-
-    // Fetchs
-
-    function getSellers(idStore) {
-        let textOption = storeSelect[0].innerHTML;
-        let valueOption = storeSelect.value;
-        storeSelect.value = ''
-        storeSelect[0].innerHTML = "Buscando..."
-        fetch(`/store/sellers/${idStore}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status !== 'success') {
-                    toastr.error("Ops! Algo deu errado, tente novamente!");
-                    storeSelect.value = ''
-                } else {
-                    allSellers = data.data;
-                    createOptions(sellersSelect, data.data);
-                    sellersSelect.removeAttribute('disabled');
-                    btnAddSeller.removeAttribute('disabled');
-                    storeSelect[0].innerHTML = textOption;
-                    storeSelect.removeAttribute('disabled');
-                    storeSelect.value = valueOption;
-                }
-            })
-    }
-
-    function getCepData(cep) {
-        const city = document.getElementById('form_cidade_loja');
-        const address = document.getElementById('form_endereco_loja');
-        const district = document.getElementById('form_bairro_loja');
-        const state = document.getElementById('form_estado_loja');
-
-        let urlFetch = urlSearchCep + cep + '/json';
-
-        city.value = '...';
-        address.value = '...'
-        district.value = '...'
-        state.value = '...'
-
-        fetch(urlFetch, {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }).then(response => response.json())
-            .then(data => {
-                city.value = data.localidade
-                address.value = data.logradouro
-                district.value = data.bairro
-                state.value = data.estado
-            })
-    }
-
-    function createClient() {
-        const form = document.getElementById('form_modal_cliente');
-        let newClient;
-        fetch('/client/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    name: document.getElementById('form_nome_cliente').value,
-                        cpf: document.getElementById('form_cpf_cliente').value.replace("-", '').split('.').join(''),
-                    email: document.getElementById('form_email_cliente').value,
-                    genderId: document.getElementById('form_genero_cliente').value,
-                    active: document.getElementById('switch_cliente').checked
+        function getSellers(idStore) {
+            let textOption = storeSelect[0].innerHTML;
+            let valueOption = storeSelect.value;
+            storeSelect.value = ''
+            storeSelect[0].innerHTML = "Buscando..."
+            fetch(`/store/sellers/${idStore}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
                 })
-            })
-            .then(response => response.json())
-            .then(dataResponse => {
-                if (dataResponse.status !== 'success') {
-                    toastr.error(dataResponse.message, 'Erro', {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        toastr.error("Ops! Algo deu errado, tente novamente!");
+                        storeSelect.value = ''
+                    } else {
+                        allSellers = data.data;
+                        createOptions(sellersSelect, data.data);
+                        sellersSelect.removeAttribute('disabled');
+                        btnAddSeller.removeAttribute('disabled');
+                        storeSelect[0].innerHTML = textOption;
+                        storeSelect.removeAttribute('disabled');
+                        storeSelect.value = valueOption;
+                    }
+                })
+        }
+
+        function getCepData(cep) {
+            const city = document.getElementById('form_cidade_loja');
+            const address = document.getElementById('form_endereco_loja');
+            const district = document.getElementById('form_bairro_loja');
+            const state = document.getElementById('form_estado_loja');
+
+            let urlFetch = urlSearchCep + cep + '/json';
+
+            city.value = '...';
+            address.value = '...'
+            district.value = '...'
+            state.value = '...'
+
+            fetch(urlFetch, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    city.value = data.localidade
+                    address.value = data.logradouro
+                    district.value = data.bairro
+                    state.value = data.estado
+                })
+        }
+
+        function createClient() {
+            const form = document.getElementById('form_modal_cliente');
+            let newClient;
+            fetch('/client/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('form_nome_cliente').value,
+                        cpf: document.getElementById('form_cpf_cliente').value.replace("-", '').split('.').join(''),
+                        email: document.getElementById('form_email_cliente').value,
+                        genderId: document.getElementById('form_genero_cliente').value,
+                        active: document.getElementById('switch_cliente').checked
+                    })
+                })
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
                             closeButton: true,
                             progressBar: true
                         });
-                } else {
-                    form.reset();
-                    form.querySelectorAll('.is-valid').forEach((e) => {
-                        e.classList.remove('is-valid');
-                    })
-                    toastr.success('Cliente cadastrado com sucesso');
-                    newClient = dataResponse.data;
-                    data.clients.push(newClient);
-                    clearOptions(clientSelect);
-                    createOptions(clientSelect, data.clients);
-                }
-            })
-    }
+                    } else {
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid');
+                        })
+                        toastr.success('Cliente cadastrado com sucesso');
+                        newClient = dataResponse.data;
+                        data.clients.push(newClient);
+                        clearOptions(clientSelect);
+                        createOptions(clientSelect, data.clients);
+                    }
+                })
+        }
 
-    function createStore() {
-        const form = document.getElementById('form_modal_loja');
-        const address = document.getElementById('form_endereco_loja').value;
+        function createStore() {
+            const form = document.getElementById('form_modal_loja');
+            const address = document.getElementById('form_endereco_loja').value;
             const number = document.getElementById('form_numero_loja').value.trim();
             const complement = document.getElementById('form_complemento_loja').value.trim();
             const completAddress =
                 complement != '' ? `${address}, ${number}, ${complement}` : `${address}, ${number}`;
-        let newStore;
+            let newStore;
 
-        fetch('/store/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
+            fetch('/store/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
                         name: document.getElementById('form_nome_loja').value.trim(),
                         cnpj: document.getElementById('form_cnpj_loja').value.replace("-", '').replace("/", '').split('.').join(''),
                         cep: document.getElementById('form_cep_loja').value.replace("-", ''),
                         address: completAddress,
-                    district: document.getElementById('form_bairro_loja').value,
-                    city: document.getElementById('form_cidade_loja').value,
-                    state: document.getElementById('form_estado_loja').value,
-                    active: document.getElementById('switch_loja').checked
+                        district: document.getElementById('form_bairro_loja').value,
+                        city: document.getElementById('form_cidade_loja').value,
+                        state: document.getElementById('form_estado_loja').value,
+                        active: document.getElementById('switch_loja').checked
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(dataResponse => {
-                if (dataResponse.status !== 'success') {
-                    toastr.error(dataResponse.message, 'Erro', {
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
                             closeButton: true,
                             progressBar: true
                         });
-                } else {
-                    form.reset();
-                    form.querySelectorAll('.is-valid').forEach((e) => {
-                        e.classList.remove('is-valid');
-                    })
-                    toastr.success('Loja cadastrada com sucesso');
-                    newStore = dataResponse.data;
-                    data.stores.push(newStore);
-                    clearOptions(storeSelect);
-                    createOptions(storeSelect, data.stores);
+                    } else {
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid');
+                        })
+                        toastr.success('Loja cadastrada com sucesso');
+                        newStore = dataResponse.data;
+                        data.stores.push(newStore);
+                        clearOptions(storeSelect);
+                        createOptions(storeSelect, data.stores);
 
-                }
-            })
-    }
+                    }
+                })
+        }
 
-    function createSeller() {
-        const form = document.getElementById('form_modal_vendedor');
-        let newSeller;
-        fetch('/seller/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    name: document.getElementById('form_nome_vendedor').value,
+        function createSeller() {
+            const form = document.getElementById('form_modal_vendedor');
+            let newSeller;
+            fetch('/seller/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('form_nome_vendedor').value,
                         cpf: document.getElementById('form_cpf_vendedor').value.replace("-", '').split('.').join(''),
-                    active: document.getElementById('switch_vendedor').checked
+                        active: document.getElementById('switch_vendedor').checked
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(dataResponse => {
-                if (dataResponse.status !== 'success') {
-                    toastr.error(dataResponse.message, 'Erro', {
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
                             closeButton: true,
                             progressBar: true
                         });
-                } else {
-                    form.reset();
-                    form.querySelectorAll('.is-valid').forEach((e) => {
-                        e.classList.remove('is-valid');
-                    })
-                    toastr.success('Vendedor cadastrado com sucesso');
-                    newSeller = dataResponse.data;
-                    allSellers.push(newSeller);
-                    clearOptions(sellersSelect);
-                    createOptions(sellersSelect, allSellers);
-                }
-            })
-    }
+                    } else {
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid');
+                        })
+                        toastr.success('Vendedor cadastrado com sucesso');
+                        newSeller = dataResponse.data;
+                        allSellers.push(newSeller);
+                        clearOptions(sellersSelect);
+                        createOptions(sellersSelect, allSellers);
+                    }
+                })
+        }
 
-    function createProduct() {
-        const form = document.getElementById('form_modal_produto');
-        let newProduct;
-        fetch('/product/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    name: document.getElementById('form_nome_produto').value,
-                    description: document.getElementById('form_descricao_produto').innerText,
-                    color: document.getElementById('form_cor_produto').value,
-                    price: parseFloat(document.getElementById('form_preco_produto').value.replace("R$ ", "")),
-                    active: document.getElementById('switch_produto').checked
+        function createProduct() {
+            const form = document.getElementById('form_modal_produto');
+            let newProduct;
+            fetch('/product/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('form_nome_produto').value,
+                        description: document.getElementById('form_descricao_produto').innerText,
+                        color: document.getElementById('form_cor_produto').value,
+                        price: parseFloat(document.getElementById('form_preco_produto').value.replace("R$ ", "")),
+                        active: document.getElementById('switch_produto').checked
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(dataResponse => {
-                if (dataResponse.status !== 'success') {
-                    toastr.error(dataResponse.message, 'Erro', {
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
                             closeButton: true,
                             progressBar: true
                         });
-                } else {
-                    form.reset();
-                    form.querySelectorAll('.is-valid').forEach((e) => {
-                        e.classList.remove('is-valid');
-                    })
-                    toastr.success('Cliente cadastrado com sucesso');
-                    newProduct = dataResponse.data;
-                    data.products.push(newProduct);
-                    clearOptions(clientSelect);
-                    createOptions(clientSelect, data.products);
-                }
-            })
-    }
-})
+                    } else {
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid');
+                        })
+                        toastr.success('Cliente cadastrado com sucesso');
+                        newProduct = dataResponse.data;
+                        data.products.push(newProduct);
+                        clearOptions(clientSelect);
+                        createOptions(clientSelect, data.products);
+                    }
+                })
+        }
+    })
 </script>
 @endsection
