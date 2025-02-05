@@ -33,3 +33,6 @@ Route::post('/store/add', [StoreController::class, 'addNewStore'])->name('addSto
 
 Route::post('/product/add', [ProductController::class, 'addNewProduct'])->name('addProduct');
 
+Route::post('/sale/register', [SaleOperationController::class, 'registerSale'])->name('registerSale');
+
+
