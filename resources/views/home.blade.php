@@ -381,15 +381,16 @@
             document.querySelectorAll("#tabela_produtos tbody tr td:last-child").forEach(td => {
                 total += parseFloat(td.textContent.replace("R$ ", "").replace(",", "."));
             });
-            document.getElementById('total_span').textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+            document.getElementById('total_span').textContent = `R$ ${total.toFixed(2).replace(".", ",")} `;
         }
 
         function addProductToOrder() {
             orderSummary.push({
                 id: productSelect.value,
                 quantity: parseInt(quantityProduct.value),
-                total: parseFloat(totalProductInput.value.replace("RS ", "").replace(",", '.'))
+                total: parseFloat(totalProductInput.value.replace("R$ ", "").replace(",", '.'))
             })
+            togglePaymentSelect();
         }
 
         function clickToRemoveRow(element) {
@@ -405,6 +406,13 @@
             options.forEach(option => select.appendChild(option));
         }
 
+        function togglePaymentSelect() {
+            const orderSize = orderSummary.length;
+            paymentSelect.toggleAttribute('disabled', !orderSize > 0);
+            observationInput.toggleAttribute('disabled', !orderSize > 0);
+            paymentSelect.value = '';
+        }
+
         function removeProductRow(element) {
             const row = element.closest("tr");
             const tbody = row.parentElement;
@@ -415,10 +423,12 @@
             row.remove();
             orderSummary = orderSummary.filter((item) => item.id != id);
 
+
             option.value = id;
             option.innerHTML = data.products.find((e) => e.id == id).name;
             productSelect.appendChild(option);
 
+            togglePaymentSelect();
             orderSelectOptions(productSelect);
             updateSaleValue()
         }
@@ -564,10 +574,20 @@
             createProduct();
         })
 
+        paymentSelect.addEventListener('change', (e) => {
+            btnFinish.setAttribute('disabled', true);
+            if (e.target.value != '') {
+                btnFinish.removeAttribute("disabled");
+            }
+        })
+
         storeSelect.addEventListener('change', (e) => {
             sellersSelect.setAttribute('disabled', true);
             btnEditStore.setAttribute('disabled', true);
             productSelect.setAttribute('disabled', true);
+            paymentSelect.setAttribute('disabled', true);
+            observationInput.setAttribute('disabled', true);
+            btnFinish.setAttribute('disabled', true);
             document.querySelectorAll("svg.btn-remover").forEach((e) => {
                 removeProductRow(e);
             });
@@ -604,7 +624,6 @@
             quantityProduct.value = 0;
             totalProductInput.value = "R$ " + "0,00";
             quantityProduct.setAttribute('disabled', true);
-            btn
             resetProductFields();
             if (e.target.value != '') {
                 quantityProduct.removeAttribute("disabled");
@@ -647,14 +666,18 @@
                 toastr.warning("Por favor preencha os campos faltantes");
                 return
             }
-            createTableRows();
             addProductToOrder();
+            createTableRows();
             resetProductFields();
         })
 
         btnSearchCep.addEventListener('click', () => {
             const cep = document.getElementById('form_cep_loja').value.replace("-", '');
             getCepData(cep);
+        })
+
+        btnFinish.addEventListener('click', () => {
+            finishSale()
         })
 
         // Fetchs
@@ -874,6 +897,56 @@
                         data.products.push(newProduct);
                         clearOptions(clientSelect);
                         createOptions(clientSelect, data.products);
+                    }
+                })
+        }
+
+        function finishSale() {
+            const totalItens = orderSummary.reduce((acc, cur) => {
+                return acc + cur.quantity
+            }, 0);
+            const totalPrice = orderSummary.reduce((acc, cur) => {
+               return acc + cur.total
+            }, 0);
+
+            console.log('cheguei', totalItens, totalPrice)
+
+            fetch('/sale/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        clientId: clientSelect.value,
+                        storeId: storeSelect.value,
+                        sellerId: sellersSelect.value,
+                        paymentId: paymentSelect.value,
+                        totalItens: totalItens,
+                        totalPrice: totalPrice,
+                        observation: document.getElementById('observacao_input').value,
+                        summary: orderSummary
+                    })
+                })
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Sucesso",
+                            text: "Venda registrada com sucesso",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+
                     }
                 })
         }
