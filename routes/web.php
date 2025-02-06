@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', [SaleController::class, "index"])->name('home');
+Route::get('/vendas', [SaleController::class, "index"])->name('home');
 
 Route::get('/relatorio', [SaleController::class, "showReport"])->name('getReport');
 
