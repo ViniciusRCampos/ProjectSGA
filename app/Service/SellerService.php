@@ -18,7 +18,11 @@ class SellerService
         $this->sellerRepository = $sellerRepository;
         $this->responseProvider = $responseProvider;
     }
-
+    /**
+     * Organizes data to match a seller's fields
+     * @param array $data
+     * @return array{CPF: int, active: boolean, name: string, store_id: int}
+     */
     private function prepareSellerData(array $data)
     {
         $sellerData = [
@@ -29,7 +33,11 @@ class SellerService
         ];
         return $sellerData;
     }
-
+    /**
+     * Search all sellers in the specified store
+     * @param int $storeId
+     * @return JsonResponse
+     */
     public function getSellers(int $storeId): JsonResponse
     {
         try {
@@ -40,7 +48,11 @@ class SellerService
             return $this->responseProvider->error($e->getCode());
         }
     }
-
+    /**
+     * Receives an array to register a new seller
+     * @param array $data
+     * @return JsonResponse
+     */
     public function addNewSeller(array $data): JsonResponse
     {
         try {
@@ -52,7 +64,11 @@ class SellerService
             return $this->responseProvider->error($e->getCode());
         }
     }
-
+    /**
+     * Search for a seller according to the id entered
+     * @param int $sellerId
+     * @return JsonResponse
+     */
     public function getSellerById(int $sellerId)
     {
         try{
@@ -63,7 +79,11 @@ class SellerService
             return $this->responseProvider->error($e->getCode());
         }
     }
-
+    /**
+     * Updates a seller's information based on the received array and the provided id
+     * @param array $data
+     * @return JsonResponse
+     */
     public function updateSeller(array $data): JsonResponse
     {
         try{
