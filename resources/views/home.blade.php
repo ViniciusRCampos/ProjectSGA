@@ -306,6 +306,7 @@
                 let option = document.createElement("option");
                 option.value = e.id;
                 option.innerHTML = e.name;
+                option.setAttribute('data-active', e.active);
                 element.appendChild(option);
             });
         }
@@ -501,6 +502,23 @@
 
         // Events
 
+        document.querySelectorAll('.modal').forEach((modal) => {
+            modal.addEventListener('hidden.bs.modal', () => {
+                const form = modal.querySelector('form');
+                if (form) {
+                    form.reset();
+                    form.querySelectorAll('.is-valid').forEach((el) => el.classList.remove('is-valid'));
+                    form.querySelectorAll('.is-invalid').forEach((el) => el.classList.remove('is-invalid'));
+                }
+
+                const btnCriar = modal.querySelector('.btn-criar');
+                const btnEditar = modal.querySelector('.btn-editar');
+
+                if (btnCriar) btnCriar.classList.remove('d-none');
+                if (btnEditar) btnEditar.classList.add('d-none');
+            });
+        });
+
         document.querySelectorAll('.modal input').forEach((input) => {
             input.addEventListener('input', (e) => {
                 const target = e.currentTarget;
@@ -581,6 +599,8 @@
         })
 
         storeSelect.addEventListener('change', (e) => {
+            const target = e.target;
+            const active = target[target['selectedIndex']].getAttribute('data-active')
             sellersSelect.setAttribute('disabled', true);
             btnEditStore.setAttribute('disabled', true);
             productSelect.setAttribute('disabled', true);
@@ -592,21 +612,32 @@
             });
             updateSaleValue();
             clearOptions(sellersSelect);
-            if (e.target.value != '') {
-                btnEditStore.removeAttribute("disabled");
+            btnEditStore.toggleAttribute("disabled", !target.value != '');
+            if (active == '0' && target.value != '') {
+                toastr.warning('Loja inativa, atualize ela ou selecione outra');
+            }
+            if (active == '1' && target.value != '') {
                 storeSelect.setAttribute('disabled', true);
-                getSellers(e.target.value);
+                getSellers(target.value);
             }
         })
 
         clientSelect.addEventListener('change', (e) => {
+            const target = e.target;
+            const active = target[target['selectedIndex']].getAttribute('data-active')
             btnEditClient.setAttribute('disabled', true);
             if (e.target.value != '') {
                 btnEditClient.removeAttribute("disabled");
             }
+            if (active == '0' && target.value != '') {
+                toastr.warning('Cliente inativo, atualize ou selecione outro');
+            }
+
         })
 
         sellersSelect.addEventListener('change', (e) => {
+            const target = e.target;
+            const active = target[target['selectedIndex']].getAttribute('data-active')
             btnEditSeller.setAttribute('disabled', true);
             productSelect.setAttribute('disabled', true);
             btnModalProduct.setAttribute('disabled', true);
@@ -615,20 +646,28 @@
                 btnEditSeller.removeAttribute("disabled");
                 productSelect.removeAttribute("disabled");
             }
+            if (active == '0' && target.value != '') {
+                toastr.warning('Vendedor inativo, atualize ou selecione outro');
+            }
         })
 
         productSelect.addEventListener('change', (e) => {
+            const target = e.target;
+            const active = target[target['selectedIndex']].getAttribute('data-active')
             btnEditProduct.setAttribute('disabled', true);
             btnAddProduct.setAttribute('disabled', true);
             quantityProduct.value = 0;
             totalProductInput.value = "R$ " + "0,00";
             quantityProduct.setAttribute('disabled', true);
             resetProductFields();
-            if (e.target.value != '') {
+            btnEditProduct.toggleAttribute("disabled", !target.value != '');
+            if (active == '0' && target.value != '') {
+                toastr.warning('Produto inativo, atualize-o ou selecione outro.');
+            }
+            if (active == '1' && target.value != '') {
                 quantityProduct.removeAttribute("disabled");
-                btnEditProduct.removeAttribute("disabled");
                 btnAddProduct.removeAttribute("disabled");
-                let product = data['products'].find((el) => el.id == e.target.value);
+                let product = data['products'].find((el) => el.id == target.value);
                 fillProductsFields(product);
                 quantityProduct.dispatchEvent(new Event('input', {
                     bubbles: true
@@ -696,7 +735,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status !== 'success') {
-                        toastr.error("Ops! Algo deu errado, tente novamente!");
+                        toastr.error("Ops! Algo deu errado, verifique os campos e tente novamente!");
                         storeSelect.value = ''
                     } else {
                         allSellers = data.data;
@@ -996,14 +1035,12 @@
                             closeButton: true,
                             progressBar: true
                         });
-                    } else {                        
+                    } else {
                         form.reset();
                         form.querySelectorAll('.is-valid').forEach((e) => {
                             e.classList.remove('is-valid');
                         })
                         $('#modal_vendedor').modal('hide');
-                        btnCreateSeller.classList.remove('d-none');
-                        document.getElementById('modal_btn_editar_vendedor').classList.add('d-none');
                         updatedSellers = allSellers.map(
                             (seller) => seller.id == dataResponse.data.id ? dataResponse.data : seller);;
                         allSellers = updatedSellers;
@@ -1018,9 +1055,10 @@
 
         function fillSellerModalInputs(data) {
             document.getElementById('modal_btn_editar_vendedor').classList.remove('d-none');
-            document.getElementById('switch_cliente').checked = data.active == 1 ? true : false;
+            document.getElementById('switch_vendedor').checked = data.active == 1 ? true : false;
             document.getElementById('form_nome_vendedor').value = data.name;
             document.getElementById('form_cpf_vendedor').value = data.CPF;
+            $('.cpf').mask('000.000.000-00', [])
             btnCreateSeller.classList.add('d-none');
         }
 

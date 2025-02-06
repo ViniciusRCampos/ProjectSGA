@@ -56,7 +56,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" id="btn_criar_cliente">Salvar</button>
+                <button type="button" class="btn btn-primary btn-criar" id="btn_criar_cliente">Salvar</button>
+                <button type="button" class="btn btn-primary btn-editar d-none" id="modal_btn_editar_cliente">Salvar</button>
+
             </div>
         </div>
     </div>
