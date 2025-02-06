@@ -1064,8 +1064,305 @@
 
         document.getElementById('modal_btn_editar_vendedor').addEventListener('click', () => {
             const sellerId = sellersSelect.value;
+            const form = document.getElementById('form_modal_vendedor')
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+
             updateSeller(sellerId);
         })
+
+        function fillClientModalInputs(data) {
+            document.getElementById('form_nome_cliente').value = data.name;
+            document.getElementById('form_cpf_cliente').value = data.CPF;
+            $('.cpf').mask('000.000.000-00', [])
+            document.getElementById('form_email_cliente').value = data.email;
+            document.getElementById('form_genero_cliente').value = data.gender_id;
+            document.getElementById('switch_cliente').checked = data.active == 1 ? true : false;
+            btnCreateClient.classList.add('d-none');
+
+            document.getElementById('modal_btn_editar_cliente').classList.remove('d-none');
+        }
+
+        btnEditClient.addEventListener('click', () => {
+            const clientId = clientSelect.value;
+            getClientById(clientId);
+        })
+
+        function getClientById(clientId) {
+            fetch(`/client/${clientId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        toastr.error("Ops! Algo deu errado, tente novamente!");
+                        clientSelect.value = ''
+                    } else {
+                        fillClientModalInputs(data.data);
+                    }
+                    $('#modal_cliente').modal('show');
+                })
+        }
+
+
+        function updateClient(clientId) {
+            const form = document.getElementById('form_modal_cliente');
+            let newClient;
+            fetch(`/client/update/${clientId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('form_nome_cliente').value,
+                        cpf: document.getElementById('form_cpf_cliente').value.replace("-", '').split('.').join(''),
+                        email: document.getElementById('form_email_cliente').value,
+                        genderId: document.getElementById('form_genero_cliente').value,
+                        active: document.getElementById('switch_cliente').checked
+                    })
+                })
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                    } else {
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid', 'is-invalid');
+                        })
+                        $('#modal_cliente').modal('hide');
+                        toastr.success('Cliente atualizado com sucesso');
+                        clients = data.clients.map((client) => client.id == dataResponse.data.id ? dataResponse.data : client);
+                        data.clients = clients;
+                        clearOptions(clientSelect);
+                        createOptions(clientSelect, data.clients);
+                    }
+                })
+        }
+
+        document.getElementById('modal_btn_editar_cliente').addEventListener('click', (e) => {
+            const form = document.getElementById('form_modal_cliente')
+            const genreSelect = document.getElementById('form_genero_cliente');
+            const clientId = clientSelect.value;
+
+            genreSelect.classList.toggle('is-invalid', genreSelect.value == '');
+            genreSelect.classList.toggle('is-valid', !genreSelect.value == '');
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+            updateClient(clientId);
+        })
+
+        btnEditStore.addEventListener('click', () => {
+            const storeId = storeSelect.value;
+            getStoreById(storeId);
+        })
+
+        function getStoreById(storeId) {
+            fetch(`/store/${storeId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        toastr.error("Ops! Algo deu errado, tente novamente!");
+                        storeSelect.value = ''
+                        storeSelect.dispatchEvent(new Event('change', {
+                            bubbles: true
+                        }));
+                    } else {
+                        fillStoreModalInputs(data.data);
+                    }
+                    $('#modal_loja').modal('show');
+                })
+        }
+
+        function updateStore(storeId) {
+            const form = document.getElementById('form_modal_vendedor');
+            const address = document.getElementById('form_endereco_loja').value;
+            const number = document.getElementById('form_numero_loja').value.trim();
+            const complement = document.getElementById('form_complemento_loja').value.trim();
+            const completAddress =
+                complement != '' ? `${address}, ${number}, ${complement}` : `${address}, ${number}`;
+
+            fetch(`/store/update/${storeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('form_nome_loja').value.trim(),
+                        cnpj: document.getElementById('form_cnpj_loja').value.replace("-", '').replace("/", '').split('.').join(''),
+                        cep: document.getElementById('form_cep_loja').value.replace("-", ''),
+                        address: completAddress,
+                        district: document.getElementById('form_bairro_loja').value,
+                        city: document.getElementById('form_cidade_loja').value,
+                        state: document.getElementById('form_estado_loja').value,
+                        active: document.getElementById('switch_loja').checked
+                    })
+                })
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                    } else {
+                        form.reset();
+                        form.querySelectorAll('.is-valid').forEach((e) => {
+                            e.classList.remove('is-valid');
+                        })
+                        $('#modal_loja').modal('hide');
+                        btnCreateSeller.classList.remove('d-none');
+                        document.getElementById('modal_btn_editar_loja').classList.add('d-none');
+                        stores = data.stores.map((store) => store.id == dataResponse.data.id ? dataResponse.data : store);
+                        data.stores = stores;
+
+                        toastr.success('Loja atualizado com sucesso');
+
+                        clearOptions(storeSelect);
+                        createOptions(storeSelect, data.stores);
+                    }
+                })
+        }
+
+        function fillStoreModalInputs(data) {
+            const address = data.address.split(', ');
+            document.getElementById('modal_btn_editar_loja').classList.remove('d-none');
+            document.getElementById('switch_loja').checked = data.active == 1 ? true : false;
+            document.getElementById('form_nome_loja').value = data.name;
+            document.getElementById('form_cnpj_loja').value = data.CNPJ;
+            document.getElementById('form_cep_loja').value = data.CEP;
+            document.getElementById('form_cidade_loja').value = data.city;
+            document.getElementById('form_endereco_loja').value = address[0];
+            document.getElementById('form_complemento_loja').value = address[2] ?? '';
+            document.getElementById('form_numero_loja').value = address[1];
+            document.getElementById('form_bairro_loja').value = data.district;
+            document.getElementById('form_estado_loja').value = data.state;
+            $('.cnpj').mask('00.000.000/0000-00', []);
+            $('.cep').mask('00000-000', []);
+            btnCreateStore.classList.add('d-none');
+        }
+
+        document.getElementById('modal_btn_editar_loja').addEventListener('click', () => {
+            const storeId = storeSelect.value;
+            const form = document.getElementById('form_modal_loja')
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+            updateStore(storeId);
+        })
+
+        document.getElementById('modal_btn_editar_produto').addEventListener('click', () => {
+            const productId = productSelect.value;
+            const form = document.getElementById('form_modal_produto')
+
+            if (form.querySelectorAll('.is-invalid').length > 0) {
+                e.preventDefault()
+                e.stopPropagation()
+                return;
+            }
+
+            updateProduct(productId);
+        })
+
+        function fillProductModalInputs(data) {
+            document.getElementById('form_nome_produto').value = data.name;
+            document.getElementById('form_descricao_produto').value = data.description;
+            document.getElementById('form_cor_produto').value = data.color;
+            document.getElementById('form_preco_produto').value = data.price.replace('.', ',');
+            document.getElementById('form_preco_produto').dispatchEvent(new Event('blur'));
+            document.getElementById('switch_produto').checked = data.active == 1 ? true : false;
+            btnCreateProduct.classList.add('d-none');
+            document.getElementById('modal_btn_editar_produto').classList.remove('d-none');
+        }
+
+        btnEditProduct.addEventListener('click', () => {
+            const productId = productSelect.value;
+            getProductById(productId);
+        })
+
+        function getProductById(productId) {
+            fetch(`/product/${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        toastr.error("Ops! Algo deu errado, tente novamente!");
+                        productSelect.value = ''
+                    } else {
+                        fillProductModalInputs(data.data);
+                    }
+                    $('#modal_produto').modal('show');
+                })
+        }
+
+
+        function updateProduct(productId) {
+            const form = document.getElementById('form_modal_produto');
+            const productName = document.getElementById('form_nome_produto').value.trim()
+            const description = document.getElementById('form_descricao_produto').innerText.trim();
+            fetch(`/product/update/${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        name: productName,
+                        description: description == '' ? productName : description,
+                        color: document.getElementById('form_cor_produto').value.trim(),
+                        price: parseFloat(document.getElementById('form_preco_produto').value.replace("R$ ", "").replace(',', '.')),
+                        active: document.getElementById('switch_produto').checked
+                    })
+                })
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.status !== 'success') {
+                        toastr.error(dataResponse.message, 'Erro', {
+                            closeButton: true,
+                            progressBar: true
+                        });
+                    } else {
+                        $('#modal_produto').modal('hide');
+                        toastr.success('Produto atualizado com sucesso');
+                        products = data.products.map((product) => product.id == dataResponse.data.id ? dataResponse.data : product);
+                        console.log(dataResponse.data, 'teste', products);
+                        data.products = products;
+                        clearOptions(productSelect);
+                        createOptions(productSelect, data.products);
+                    }
+                })
+        }
     })
 </script>
 @endsection
