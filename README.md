@@ -3,7 +3,8 @@
 Projeto desenvolvido em PHP 8.0 utilizando o framework Laravel 9.x.
 Este projeto é uma aplicação web desenvolvida como parte de um teste técnico.
 
-O projeto é uma simulação de um sistema de vendas onde é possível cadastrar ou atualizar clientes, produtos, lojas e vendedores. Possui também uma aba onde encontra-se um relatório com todas as vendas efetuadas e filtros de data, vendedor, loja e cliente.
+Este projeto simula um sistema de vendas, permitindo o cadastro e atualização de clientes, produtos, lojas e vendedores.
+Possui também uma aba onde se encontra um relatório com todas as vendas efetuadas, incluindo filtros por data, vendedor, loja e cliente.
 
 ## Funcionalidades
 
