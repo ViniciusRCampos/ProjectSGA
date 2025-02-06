@@ -12,6 +12,12 @@ class SaleRepository extends ModelRepository
         parent::__construct($sale);
     }
 
+    /**
+     * Register a new sale and add details to the sale_products table
+     * @param array $data
+     * @param array $summary
+     * @return \Illuminate\Database\Eloquent\Model
+     */
     public function createWithSummary(array $data, array $summary)
     {
         $sale = $this->model->create($data);
@@ -23,6 +29,11 @@ class SaleRepository extends ModelRepository
         return $sale;
     }
 
+    /**
+     * Search for sales report data
+     * @param array $filters
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model[]
+     */
     public function getReportData(array $filters = []){
         $query = $this->model->select([
             'sales.id',

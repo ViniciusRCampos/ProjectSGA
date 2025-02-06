@@ -12,6 +12,10 @@ class PaymentMethodRepository extends ModelRepository
         parent::__construct($paymentMethod);
     }
 
+    /**
+     * Search only for payment records that are active
+     * @return Collection|\Illuminate\Database\Eloquent\Model[]
+     */
     public function getActives(): Collection
     {
         return $this->model->where('active', true)->get();

@@ -6,7 +6,6 @@ use App\Providers\ResponseProvider;
 use App\Repository\Model\SaleRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use PhpParser\Node\Stmt\TryCatch;
 
 class SaleOperationService
 {
@@ -21,8 +20,13 @@ class SaleOperationService
         $this->responseProvider = $responseProvider;
         $this->saleRepository = $saleRepository;
     }
-
-    private function prepareSaleData(array $data): array{
+    /**
+     * Function to prepare data for use
+     * @param array $data
+     * @return array{client_id: int, observation: mixed, payment_id: int, seller_id: int, store_id: int, total_itens: int, total_price: float}
+     */
+    private function prepareSaleData(array $data): array
+    {
         $saleData = [
             "client_id" => $data['clientId'],
             "store_id" => $data['storeId'],
@@ -34,7 +38,12 @@ class SaleOperationService
         ];
         return $saleData;
     }
-
+    /**
+     * Registers a new sale based on the data received
+     * @param array $data
+     * @param array $summary
+     * @return JsonResponse|mixed
+     */
     public function registerSale(array $data, array $summary): JsonResponse
     {
         try {

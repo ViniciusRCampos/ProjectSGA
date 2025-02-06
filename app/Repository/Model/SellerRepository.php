@@ -11,8 +11,12 @@ class SellerRepository extends ModelRepository
     {
         parent::__construct($seller);
     }
-
-    public function getSellersByStoreId($storeId): Collection
+    /**
+     * Search for sellers who are linked to the store with the specified id
+     * @param int $storeId
+     * @return Collection|\Illuminate\Database\Eloquent\Model[]
+     */
+    public function getSellersByStoreId(int $storeId): Collection
     {
         $sellers = $this->model->where('store_id', $storeId)->get();
         return $sellers;

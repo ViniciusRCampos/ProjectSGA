@@ -12,6 +12,10 @@ class GenderRepository extends ModelRepository{
         parent::__construct($gender);
     }
 
+    /**
+     * Search only for gender records that are active
+     * @return Collection|\Illuminate\Database\Eloquent\Model[]
+     */
     public function getActives(): Collection
     {
         return $this->model->where('active', true)->get();
